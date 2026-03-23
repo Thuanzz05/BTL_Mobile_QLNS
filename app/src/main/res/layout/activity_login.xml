@@ -9,11 +9,11 @@
 
     <!-- Logo/Icon -->
     <ImageView
-        android:layout_width="180dp"
-        android:layout_height="180dp"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
         android:src="@drawable/quan_tri_nhan_su"
-        android:scaleType="centerCrop"
-        android:layout_marginBottom="24dp" />
+        android:scaleType="centerInside"
+        android:layout_marginBottom="16dp" />
 
     <!-- Logo/Title -->
     <TextView
@@ -33,7 +33,7 @@
         android:textSize="16sp"
         android:textColor="#666"
         android:gravity="center"
-        android:layout_marginBottom="48dp" />
+        android:layout_marginBottom="32dp" />
 
     <!-- Login Form -->
     <LinearLayout
@@ -56,8 +56,10 @@
                 android:layout_height="wrap_content"
                 android:hint="Tên đăng nhập"
                 android:inputType="text"
-                android:drawableStart="@android:drawable/ic_dialog_email"
-                android:drawablePadding="12dp" />
+                android:drawableStart="@drawable/ic_person"
+                android:drawablePadding="12dp"
+                android:background="@android:color/transparent"
+                android:padding="12dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Password -->
@@ -72,8 +74,10 @@
                 android:layout_height="wrap_content"
                 android:hint="Mật khẩu"
                 android:inputType="textPassword"
-                android:drawableStart="@android:drawable/ic_lock_lock"
-                android:drawablePadding="12dp" />
+                android:drawableStart="@drawable/ic_lock"
+                android:drawablePadding="12dp"
+                android:background="@android:color/transparent"
+                android:padding="12dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Login Button -->
@@ -83,7 +87,7 @@
             android:layout_height="wrap_content"
             android:text="ĐĂNG NHẬP"
             android:textColor="@android:color/white"
-            android:background="#2196F3"
+            android:backgroundTint="#2196F3"
             android:textSize="16sp"
             android:textStyle="bold"
             android:layout_marginBottom="16dp" />
