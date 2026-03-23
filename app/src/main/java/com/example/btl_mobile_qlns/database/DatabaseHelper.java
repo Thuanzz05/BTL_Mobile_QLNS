@@ -253,5 +253,93 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result;
     }
     
+    // Lấy thông tin user
+    public Cursor getUserInfo(String username) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT tk.*, nv.HoTen FROM " + TABLE_TAI_KHOAN + " tk " +
+                      "JOIN " + TABLE_NHAN_VIEN + " nv ON tk.MaNhanVien = nv.MaNhanVien " +
+                      "WHERE tk.TenDangNhap = ?";
+        return db.rawQuery(query, new String[]{username});
+    }
     
+    // Kiểm tra username đã tồn tại
+    public boolean checkUsernameExists(String username) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_TAI_KHOAN + " WHERE TenDangNhap = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{username});
+        boolean exists = cursor.getCount() > 0;
+        cursor.close();
+        return exists;
+    }
+    
+    // Kiểm tra mã nhân viên đã tồn tại
+    public boolean checkEmployeeExists(String maNhanVien) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_NHAN_VIEN + " WHERE MaNhanVien = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{maNhanVien});
+        boolean exists = cursor.getCount() > 0;
+        cursor.close();
+        return exists;
+    }
+    
+    // Lấy danh sách phòng ban
+    public Cursor getAllDepartments() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_PHONG_BAN + " WHERE TrangThai = 1", null);
+    }
+    
+    // Lấy danh sách chức vụ
+    public Cursor getAllPositions() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_CHUC_VU + " WHERE TrangThai = 1", null);
+    }
+    
+    // Đăng ký tài khoản mới (tạo cả nhân viên và tài khoản)
+    public boolean registerUser(String maNhanVien, String hoTen, String ngaySinh, String gioiTinh,
+                               String soDienThoai, String email, String ngayVaoLam, String maPhongBan,
+                               String maChucVu, String tenDangNhap, String matKhau) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        
+        try {
+            db.beginTransaction();
+            
+            // Thêm nhân viên trước
+            ContentValues nvValues = new ContentValues();
+            nvValues.put("MaNhanVien", maNhanVien);
+            nvValues.put("HoTen", hoTen);
+            nvValues.put("NgaySinh", ngaySinh);
+            nvValues.put("GioiTinh", gioiTinh);
+            nvValues.put("SoDienThoai", soDienThoai);
+            nvValues.put("Email", email);
+            nvValues.put("NgayVaoLam", ngayVaoLam);
+            nvValues.put("MaPhongBan", maPhongBan);
+            nvValues.put("MaChucVu", maChucVu);
+            nvValues.put("TrangThaiLamViec", "Đang làm việc");
+            
+            long nvResult = db.insert(TABLE_NHAN_VIEN, null, nvValues);
+            
+            if (nvResult != -1) {
+                // Thêm tài khoản
+                ContentValues tkValues = new ContentValues();
+                tkValues.put("MaNhanVien", maNhanVien);
+                tkValues.put("TenDangNhap", tenDangNhap);
+                tkValues.put("MatKhau", matKhau);
+                tkValues.put("VaiTro", "Employee");
+                tkValues.put("TrangThai", 1);
+                
+                long tkResult = db.insert(TABLE_TAI_KHOAN, null, tkValues);
+                
+                if (tkResult != -1) {
+                    db.setTransactionSuccessful();
+                    return true;
+                }
+            }
+            
+            return false;
+        } catch (Exception e) {
+            return false;
+        } finally {
+            db.endTransaction();
+        }
+    }
 }
