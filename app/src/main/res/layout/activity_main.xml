@@ -1,55 +1,319 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f5f5f5"
+    android:background="#f8f9fa"
     tools:context=".MainActivity">
 
     <LinearLayout
+        android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp"
-        android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:orientation="vertical">
 
-        <TextView
+        <!-- Header với gradient -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="HỆ THỐNG QUẢN LÝ NHÂN SỰ"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="#2196F3"
-            android:gravity="center"
-            android:layout_marginBottom="24dp" />
+            android:orientation="vertical"
+            android:background="@drawable/header_gradient"
+            android:padding="24dp"
+            android:elevation="8dp">
 
-        <TextView
-            android:id="@+id/tv_welcome"
+            <!-- Logo -->
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/quan_tri_nhan_su"
+                android:scaleType="centerCrop"
+                android:layout_gravity="center"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="HỆ THỐNG QUẢN LÝ NHÂN SỰ"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:gravity="center"
+                android:layout_marginBottom="8dp"
+                android:letterSpacing="0.1" />
+
+            <TextView
+                android:id="@+id/tv_welcome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Chào mừng bạn đến với ứng dụng QLNS hiện đại"
+                android:textSize="16sp"
+                android:textColor="@android:color/white"
+                android:gravity="center"
+                android:alpha="0.9" />
+
+        </LinearLayout>
+
+        <!-- Nội dung giới thiệu -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Chào mừng đến với hệ thống QLNS!"
-            android:textSize="18sp"
-            android:textColor="#333"
-            android:gravity="center"
-            android:background="@android:color/white"
-            android:padding="16dp"
-            android:elevation="2dp"
-            android:layout_marginBottom="32dp" />
+            android:orientation="vertical"
+            android:padding="20dp">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Chức năng sẽ được phát triển thêm..."
-            android:textSize="14sp"
-            android:textColor="#666"
-            android:gravity="center" />
+            <!-- Giới thiệu chung -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@android:color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="GIỚI THIỆU ỨNG DỤNG"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="#2c3e50"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Ứng dụng Quản lý Nhân sự được thiết kế để giúp doanh nghiệp quản lý hiệu quả thông tin nhân viên, chấm công, nghỉ phép và tính lương một cách tự động và chính xác."
+                        android:textSize="14sp"
+                        android:textColor="#555"
+                        android:lineSpacingExtra="4dp" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Tính năng chính -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@android:color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="TÍNH NĂNG CHÍNH"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="#2c3e50"
+                        android:layout_marginBottom="16dp" />
+
+                    <!-- Feature 1 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Quản lý Nhân viên"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#333" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Thêm, sửa, xóa thông tin nhân viên, phòng ban, chức vụ"
+                            android:textSize="12sp"
+                            android:textColor="#666" />
+
+                    </LinearLayout>
+
+                    <!-- Feature 2 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Chấm công thông minh"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#333" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Ghi nhận giờ vào/ra, tính toán giờ làm việc tự động"
+                            android:textSize="12sp"
+                            android:textColor="#666" />
+
+                    </LinearLayout>
+
+                    <!-- Feature 3 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Quản lý Nghỉ phép"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#333" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Đăng ký nghỉ phép online, duyệt đơn tự động"
+                            android:textSize="12sp"
+                            android:textColor="#666" />
+
+                    </LinearLayout>
+
+                    <!-- Feature 4 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Tính lương tự động"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#333" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Tính toán lương, phụ cấp, thưởng dựa trên chấm công"
+                            android:textSize="12sp"
+                            android:textColor="#666" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Lợi ích -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@android:color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="LỢI ÍCH"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="#2c3e50"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="✓ Tiết kiệm thời gian quản lý nhân sự\n✓ Giảm thiểu sai sót trong tính lương\n✓ Theo dõi hiệu suất làm việc\n✓ Báo cáo chi tiết và chính xác\n✓ Giao diện thân thiện, dễ sử dụng"
+                        android:textSize="14sp"
+                        android:textColor="#555"
+                        android:lineSpacingExtra="4dp" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Thông tin phiên bản -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#e8f5e8">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="THÔNG TIN PHIÊN BẢN"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#2e7d32"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Phiên bản: 1.0.0\nNgày phát hành: Tháng 3, 2026\nHỗ trợ: Android 7.0+"
+                        android:textSize="12sp"
+                        android:textColor="#388e3c"
+                        android:lineSpacingExtra="2dp" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Nút vào ứng dụng -->
+            <Button
+                android:id="@+id/btn_vao_ung_dung"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="VÀO ỨNG DỤNG"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:background="@drawable/header_gradient"
+                android:layout_marginBottom="16dp"
+                android:elevation="4dp" />
+
+            <!-- Nút đăng xuất -->
+            <Button
+                android:id="@+id/btn_dang_xuat"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:text="ĐĂNG XUẤT"
+                android:textSize="14sp"
+                android:textColor="#666"
+                android:background="@android:color/transparent"
+                android:layout_marginBottom="16dp" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
