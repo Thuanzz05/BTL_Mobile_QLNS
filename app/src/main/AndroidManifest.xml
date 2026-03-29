@@ -33,6 +33,10 @@
             android:name=".DashboardActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".QuanLyNhanVienActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

@@ -142,6 +142,28 @@
             </androidx.cardview.widget.CardView>
 
             <!-- Đăng xuất -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="#9C27B0">
+
+                <Button
+                    android:id="@+id/btn_thong_tin"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="THÔNG TIN CÁ NHÂN"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:background="@android:color/transparent"
+                    android:gravity="center" />
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Đăng xuất -->
             <Button
                 android:id="@+id/btn_dang_xuat"
                 android:layout_width="match_parent"

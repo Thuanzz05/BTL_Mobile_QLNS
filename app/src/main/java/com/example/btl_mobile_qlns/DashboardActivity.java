@@ -72,7 +72,8 @@ public class DashboardActivity extends AppCompatActivity {
     
     private void setupButtons() {
         btnQuanLyNV.setOnClickListener(v -> {
-            Toast.makeText(this, "Chức năng đang phát triển", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(DashboardActivity.this, QuanLyNhanVienActivity.class);
+            startActivity(intent);
         });
         
         btnChamCong.setOnClickListener(v -> {
