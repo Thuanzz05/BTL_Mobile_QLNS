@@ -343,3 +343,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 }
+    // Lấy tất cả nhân viên
+    public Cursor getAllEmployees() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM NhanVien", null);
+    }
