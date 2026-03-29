@@ -343,9 +343,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
     
-    // Lấy tất cả nhân viên
+    // Lấy tất cả nhân viên với thông tin chức vụ
     public Cursor getAllEmployees() {
         SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery("SELECT * FROM NhanVien", null);
+        String query = "SELECT nv.MaNhanVien, nv.HoTen, nv.GioiTinh, cv.TenChucVu, pb.TenPhongBan " +
+                      "FROM NhanVien nv " +
+                      "LEFT JOIN ChucVu cv ON nv.MaChucVu = cv.MaChucVu " +
+                      "LEFT JOIN PhongBan pb ON nv.MaPhongBan = pb.MaPhongBan " +
+                      "WHERE nv.TrangThaiLamViec = 'Đang làm việc'";
+        return db.rawQuery(query, null);
     }
 }
