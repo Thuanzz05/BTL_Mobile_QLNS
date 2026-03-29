@@ -67,8 +67,8 @@ public class LoginActivity extends AppCompatActivity {
         
         if (loginSuccess) {
             Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-            // Chuyển đến MainActivity hoặc Dashboard
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            // Chuyển đến DashboardActivity (trang chính sau khi đăng nhập)
+            Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
             intent.putExtra("username", username);
             startActivity(intent);
             finish();

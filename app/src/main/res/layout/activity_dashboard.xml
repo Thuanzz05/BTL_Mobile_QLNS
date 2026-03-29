@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#f8f9fa"
+    tools:context=".DashboardActivity">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/header_gradient"
+        android:padding="20dp"
+        android:elevation="8dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="BẢNG ĐIỀU KHIỂN"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"
+            android:letterSpacing="0.1" />
+
+        <TextView
+            android:id="@+id/tv_welcome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Chào mừng!"
+            android:textSize="16sp"
+            android:textColor="@android:color/white"
+            android:gravity="center"
+            android:alpha="0.9" />
+
+    </LinearLayout>
+
+    <!-- Menu chức năng -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Quản lý nhân viên -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="#4CAF50">
+
+                <Button
+                    android:id="@+id/btn_quan_ly_nv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="QUẢN LÝ NHÂN VIÊN"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:background="@android:color/transparent"
+                    android:gravity="center" />
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Chấm công -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="#9C27B0">
+
+                <Button
+                    android:id="@+id/btn_cham_cong"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="CHẤM CÔNG"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:background="@android:color/transparent"
+                    android:gravity="center" />
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Nghỉ phép -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="#FF5722">
+
+                <Button
+                    android:id="@+id/btn_nghi_phep"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="NGHỈ PHÉP"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:background="@android:color/transparent"
+                    android:gravity="center" />
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Lương -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="#3F51B5">
+
+                <Button
+                    android:id="@+id/btn_luong"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="QUẢN LÝ LƯƠNG"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:background="@android:color/transparent"
+                    android:gravity="center" />
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Đăng xuất -->
+            <Button
+                android:id="@+id/btn_dang_xuat"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="ĐĂNG XUẤT"
+                android:textSize="16sp"
+                android:textColor="#666"
+                android:background="@android:color/transparent"
+                android:layout_marginTop="16dp" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>
