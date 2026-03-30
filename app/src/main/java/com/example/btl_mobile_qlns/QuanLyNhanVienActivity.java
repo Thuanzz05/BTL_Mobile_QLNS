@@ -73,8 +73,9 @@ public class QuanLyNhanVienActivity extends AppCompatActivity {
                 String gioiTinh = cursor.getString(cursor.getColumnIndexOrThrow("GioiTinh"));
                 String tenChucVu = cursor.getString(cursor.getColumnIndexOrThrow("TenChucVu"));
                 String tenPhongBan = cursor.getString(cursor.getColumnIndexOrThrow("TenPhongBan"));
+                String hinhAnh = cursor.getString(cursor.getColumnIndexOrThrow("HinhAnh"));
                 
-                listNhanVien.add(new NhanVien(maNV, hoTen, gioiTinh, tenChucVu, tenPhongBan));
+                listNhanVien.add(new NhanVien(maNV, hoTen, gioiTinh, tenChucVu, tenPhongBan, hinhAnh));
             } while (cursor.moveToNext());
             cursor.close();
         }
