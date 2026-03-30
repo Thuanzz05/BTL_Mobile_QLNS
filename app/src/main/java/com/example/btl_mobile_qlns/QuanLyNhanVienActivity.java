@@ -63,9 +63,12 @@ public class QuanLyNhanVienActivity extends AppCompatActivity {
     }
     
     private void taiDanhSachNhanVien() {
-        listNhanVien = new ArrayList<>();
         Cursor cursor = dbHelper.getAllEmployees();
-        
+        hienThiDanhSach(cursor);
+    }
+
+    private void hienThiDanhSach(Cursor cursor) {
+        listNhanVien = new ArrayList<>();
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 String maNV = cursor.getString(cursor.getColumnIndexOrThrow("MaNhanVien"));
@@ -73,8 +76,9 @@ public class QuanLyNhanVienActivity extends AppCompatActivity {
                 String gioiTinh = cursor.getString(cursor.getColumnIndexOrThrow("GioiTinh"));
                 String tenChucVu = cursor.getString(cursor.getColumnIndexOrThrow("TenChucVu"));
                 String tenPhongBan = cursor.getString(cursor.getColumnIndexOrThrow("TenPhongBan"));
+                String hinhAnh = cursor.getString(cursor.getColumnIndexOrThrow("HinhAnh"));
                 
-                listNhanVien.add(new NhanVien(maNV, hoTen, gioiTinh, tenChucVu, tenPhongBan));
+                listNhanVien.add(new NhanVien(maNV, hoTen, gioiTinh, tenChucVu, tenPhongBan, hinhAnh));
             } while (cursor.moveToNext());
             cursor.close();
         }
@@ -123,15 +127,25 @@ public class QuanLyNhanVienActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                if (adapter != null) adapter.filter(query);
+                thucHienTimKiem(query);
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if (adapter != null) adapter.filter(newText);
+                thucHienTimKiem(newText);
                 return true;
             }
         });
+    }
+
+    private void thucHienTimKiem(String keyword) {
+        Cursor cursor;
+        if (keyword.isEmpty()) {
+            cursor = dbHelper.getAllEmployees();
+        } else {
+            cursor = dbHelper.searchEmployees(keyword);
+        }
+        hienThiDanhSach(cursor);
     }
 }

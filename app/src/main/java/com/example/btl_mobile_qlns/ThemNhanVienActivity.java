@@ -1,15 +1,19 @@
 package com.example.btl_mobile_qlns;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.btl_mobile_qlns.database.DatabaseHelper;
@@ -20,12 +24,15 @@ import java.util.List;
 
 public class ThemNhanVienActivity extends AppCompatActivity {
 
+    private static final int PICK_IMAGE_REQUEST = 1;
     private EditText etMaNV, etHoTen, etNgaySinh, etSDT, etEmail;
     private Spinner spGioiTinh, spPhongBan, spChucVu;
     private Button btnSave;
     private TextView tvTitle;
+    private ImageView ivAvatar;
     private DatabaseHelper dbHelper;
-    private String currentMaNV = null; // null means adding, not null means editing
+    private String currentMaNV = null;
+    private String imageUri = "";
 
     private List<String> listMaPB = new ArrayList<>();
     private List<String> listTenPB = new ArrayList<>();
@@ -42,13 +49,17 @@ public class ThemNhanVienActivity extends AppCompatActivity {
         taiDanhMuc();
         thietLapNgaySinh();
 
-        // Kiểm tra xem là thêm mới hay sửa
+        ivAvatar.setOnClickListener(v -> openGallery());
+
         if (getIntent().hasExtra("ma_nv")) {
             currentMaNV = getIntent().getStringExtra("ma_nv");
             tvTitle.setText("CẬP NHẬT NHÂN VIÊN");
             etMaNV.setText(currentMaNV);
-            etMaNV.setEnabled(false); // Không cho sửa mã
+            etMaNV.setEnabled(false);
             dienThongTinNhanVien(currentMaNV);
+        } else {
+            etMaNV.setText(dbHelper.getNextEmployeeCode());
+            etMaNV.setEnabled(false);
         }
 
         btnSave.setOnClickListener(v -> saveNhanVien());
@@ -56,6 +67,7 @@ public class ThemNhanVienActivity extends AppCompatActivity {
 
     private void khoiTaoViews() {
         tvTitle = findViewById(R.id.tv_title);
+        ivAvatar = findViewById(R.id.iv_avatar_setup);
         etMaNV = findViewById(R.id.et_ma_nv);
         etHoTen = findViewById(R.id.et_ho_ten);
         etNgaySinh = findViewById(R.id.et_ngay_sinh);
@@ -67,8 +79,28 @@ public class ThemNhanVienActivity extends AppCompatActivity {
         btnSave = findViewById(R.id.btn_save);
     }
 
+    private void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            Uri uri = data.getData();
+            // Xin quyền truy cập lâu dài cho URI này
+            getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            imageUri = uri.toString();
+            ivAvatar.setImageURI(uri);
+            ivAvatar.setPadding(0, 0, 0, 0);
+            ivAvatar.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        }
+    }
+
     private void taiDanhMuc() {
-        // Tải phòng ban
         Cursor cursorPB = dbHelper.getAllDepartments();
         if (cursorPB != null && cursorPB.moveToFirst()) {
             do {
@@ -81,7 +113,6 @@ public class ThemNhanVienActivity extends AppCompatActivity {
         adapterPB.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spPhongBan.setAdapter(adapterPB);
 
-        // Tải chức vụ
         Cursor cursorCV = dbHelper.getAllPositions();
         if (cursorCV != null && cursorCV.moveToFirst()) {
             do {
@@ -98,21 +129,13 @@ public class ThemNhanVienActivity extends AppCompatActivity {
     private void thietLapNgaySinh() {
         etNgaySinh.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
-            int year = calendar.get(Calendar.YEAR);
-            int month = calendar.get(Calendar.MONTH);
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-            DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, year1, month1, dayOfMonth) -> {
-                String date = String.format("%d-%02d-%02d", year1, month1 + 1, dayOfMonth);
-                etNgaySinh.setText(date);
-            }, year, month, day);
-            datePickerDialog.show();
+            new DatePickerDialog(this, (view, year, month, day) -> {
+                etNgaySinh.setText(String.format("%d-%02d-%02d", year, month + 1, day));
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
         });
     }
 
     private void dienThongTinNhanVien(String maNV) {
-        // Trong thực tế nên viết 1 hàm getEmployeeByMa trong DatabaseHelper
-        // Ở đây ta dùng getAll và filter cho nhanh hoặc query trực tiếp
         Cursor cursor = dbHelper.getAllEmployees();
         if (cursor != null && cursor.moveToFirst()) {
             do {
@@ -122,18 +145,22 @@ public class ThemNhanVienActivity extends AppCompatActivity {
                     etSDT.setText(cursor.getString(cursor.getColumnIndexOrThrow("SoDienThoai")));
                     etEmail.setText(cursor.getString(cursor.getColumnIndexOrThrow("Email")));
                     
-                    String gioiTinh = cursor.getString(cursor.getColumnIndexOrThrow("GioiTinh"));
+                    imageUri = cursor.getString(cursor.getColumnIndexOrThrow("HinhAnh"));
+                    if (imageUri != null && !imageUri.isEmpty()) {
+                        ivAvatar.setImageURI(Uri.parse(imageUri));
+                        ivAvatar.setPadding(0, 0, 0, 0);
+                        ivAvatar.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    }
+
+                    String gt = cursor.getString(cursor.getColumnIndexOrThrow("GioiTinh"));
                     ArrayAdapter adapterGT = (ArrayAdapter) spGioiTinh.getAdapter();
-                    int posGT = adapterGT.getPosition(gioiTinh);
-                    if (posGT >= 0) spGioiTinh.setSelection(posGT);
+                    if (adapterGT != null) spGioiTinh.setSelection(adapterGT.getPosition(gt));
 
                     String maPB = cursor.getString(cursor.getColumnIndexOrThrow("MaPhongBan"));
-                    int posPB = listMaPB.indexOf(maPB);
-                    if (posPB >= 0) spPhongBan.setSelection(posPB);
+                    spPhongBan.setSelection(listMaPB.indexOf(maPB));
 
                     String maCV = cursor.getString(cursor.getColumnIndexOrThrow("MaChucVu"));
-                    int posCV = listMaCV.indexOf(maCV);
-                    if (posCV >= 0) spChucVu.setSelection(posCV);
+                    spChucVu.setSelection(listMaCV.indexOf(maCV));
                     break;
                 }
             } while (cursor.moveToNext());
@@ -148,25 +175,19 @@ public class ThemNhanVienActivity extends AppCompatActivity {
         String gioiTinh = spGioiTinh.getSelectedItem().toString();
         String sdt = etSDT.getText().toString().trim();
         String email = etEmail.getText().toString().trim();
-        
-        if (maNV.isEmpty() || hoTen.isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập đầy đủ Mã và Họ tên", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         String maPB = listMaPB.get(spPhongBan.getSelectedItemPosition());
         String maCV = listMaCV.get(spChucVu.getSelectedItemPosition());
 
+        if (hoTen.isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập họ tên", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         boolean success;
         if (currentMaNV == null) {
-            // Kiểm tra trùng mã
-            if (dbHelper.checkEmployeeExists(maNV)) {
-                Toast.makeText(this, "Mã nhân viên đã tồn tại", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            success = dbHelper.addEmployee(maNV, hoTen, ngaySinh, gioiTinh, sdt, email, maPB, maCV);
+            success = dbHelper.addEmployee(maNV, hoTen, ngaySinh, gioiTinh, sdt, email, maPB, maCV, imageUri);
         } else {
-            success = dbHelper.updateEmployee(maNV, hoTen, ngaySinh, gioiTinh, sdt, email, maPB, maCV);
+            success = dbHelper.updateEmployee(maNV, hoTen, ngaySinh, gioiTinh, sdt, email, maPB, maCV, imageUri);
         }
 
         if (success) {
