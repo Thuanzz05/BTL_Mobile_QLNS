@@ -294,6 +294,43 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return db.rawQuery("SELECT * FROM " + TABLE_CHUC_VU + " WHERE TrangThai = 1", null);
     }
     
+    // Thêm nhân viên
+    public boolean addEmployee(String maNV, String hoTen, String ngaySinh, String gioiTinh, 
+                              String sdt, String email, String maPB, String maCV) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("MaNhanVien", maNV);
+        cv.put("HoTen", hoTen);
+        cv.put("NgaySinh", ngaySinh);
+        cv.put("GioiTinh", gioiTinh);
+        cv.put("SoDienThoai", sdt);
+        cv.put("Email", email);
+        cv.put("NgayVaoLam", java.time.LocalDate.now().toString());
+        cv.put("MaPhongBan", maPB);
+        cv.put("MaChucVu", maCV);
+        cv.put("TrangThaiLamViec", "Đang làm việc");
+        
+        long result = db.insert(TABLE_NHAN_VIEN, null, cv);
+        return result != -1;
+    }
+
+    // Cập nhật nhân viên
+    public boolean updateEmployee(String maNV, String hoTen, String ngaySinh, String gioiTinh, 
+                                 String sdt, String email, String maPB, String maCV) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("HoTen", hoTen);
+        cv.put("NgaySinh", ngaySinh);
+        cv.put("GioiTinh", gioiTinh);
+        cv.put("SoDienThoai", sdt);
+        cv.put("Email", email);
+        cv.put("MaPhongBan", maPB);
+        cv.put("MaChucVu", maCV);
+        
+        int result = db.update(TABLE_NHAN_VIEN, cv, "MaNhanVien = ?", new String[]{maNV});
+        return result > 0;
+    }
+    
     // Đăng ký tài khoản mới (tạo cả nhân viên và tài khoản)
     public boolean registerUser(String maNhanVien, String hoTen, String ngaySinh, String gioiTinh,
                                String soDienThoai, String email, String ngayVaoLam, String maPhongBan,
@@ -346,11 +383,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Lấy tất cả nhân viên với thông tin chức vụ
     public Cursor getAllEmployees() {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT nv.MaNhanVien, nv.HoTen, nv.GioiTinh, cv.TenChucVu, pb.TenPhongBan " +
+        String query = "SELECT nv.MaNhanVien, nv.HoTen, nv.GioiTinh, cv.TenChucVu, pb.TenPhongBan, nv.NgaySinh, nv.SoDienThoai, nv.Email, nv.MaPhongBan, nv.MaChucVu " +
                       "FROM NhanVien nv " +
                       "LEFT JOIN ChucVu cv ON nv.MaChucVu = cv.MaChucVu " +
                       "LEFT JOIN PhongBan pb ON nv.MaPhongBan = pb.MaPhongBan " +
                       "WHERE nv.TrangThaiLamViec = 'Đang làm việc'";
         return db.rawQuery(query, null);
+    }
+
+    public boolean deleteEmployee(String maNhanVien) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("TrangThaiLamViec", "Đã nghỉ việc");
+        int result = db.update(TABLE_NHAN_VIEN, values, "MaNhanVien = ?", new String[]{maNhanVien});
+        return result > 0;
     }
 }
