@@ -398,4 +398,42 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         int result = db.update(TABLE_NHAN_VIEN, values, "MaNhanVien = ?", new String[]{maNhanVien});
         return result > 0;
     }
+
+    public String getNextEmployeeCode() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        // Lọc chỉ các mã bắt đầu bằng 'NV' và sắp xếp theo độ dài rồi đến giá trị chuỗi
+        String query = "SELECT MaNhanVien FROM " + TABLE_NHAN_VIEN + 
+                      " WHERE MaNhanVien LIKE 'NV%' " +
+                      " ORDER BY length(MaNhanVien) DESC, MaNhanVien DESC LIMIT 1";
+        Cursor cursor = db.rawQuery(query, null);
+        String lastCode = null;
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                lastCode = cursor.getString(0).trim();
+            }
+            cursor.close();
+        }
+
+        if (lastCode == null) {
+            return "NV001";
+        }
+
+        // Sử dụng Regex để tách tiền tố và phần số
+        java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("^([a-zA-Z]+)(\\d+)$").matcher(lastCode);
+        if (matcher.find()) {
+            String prefix = matcher.group(1);
+            String numberStr = matcher.group(2);
+            try {
+                int number = Integer.parseInt(numberStr);
+                int nextNumber = number + 1;
+                // Giữ nguyên độ dài phần số (padding với số 0)
+                String format = "%s%0" + numberStr.length() + "d";
+                return String.format(format, prefix, nextNumber);
+            } catch (NumberFormatException e) {
+                return "NV001";
+            }
+        }
+
+        return "NV001";
+    }
 }

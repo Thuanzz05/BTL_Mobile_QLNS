@@ -49,6 +49,11 @@ public class ThemNhanVienActivity extends AppCompatActivity {
             etMaNV.setText(currentMaNV);
             etMaNV.setEnabled(false); // Không cho sửa mã
             dienThongTinNhanVien(currentMaNV);
+        } else {
+            // Thêm mới: Tự động điền mã nhân viên tăng dần
+            String nextMaNV = dbHelper.getNextEmployeeCode();
+            etMaNV.setText(nextMaNV);
+            etMaNV.setEnabled(false); // Khóa trường mã NV để tránh sửa đổi thủ công
         }
 
         btnSave.setOnClickListener(v -> saveNhanVien());
