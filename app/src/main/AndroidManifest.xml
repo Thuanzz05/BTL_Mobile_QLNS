@@ -37,6 +37,10 @@
             android:name=".QuanLyNhanVienActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ThemNhanVienActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>
