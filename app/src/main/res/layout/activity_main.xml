@@ -130,7 +130,7 @@
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="120dp"
+                    android:layout_height="180dp"
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:background="@drawable/card_feature"
@@ -138,12 +138,11 @@
                     android:padding="16dp"
                     android:layout_marginEnd="8dp">
 
-                    <TextView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:text="👥"
-                        android:textSize="24sp"
-                        android:gravity="center"
+                    <ImageView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/quan_ly_nhan_vien"
+                        android:scaleType="centerCrop"
                         android:layout_marginBottom="8dp" />
 
                     <TextView
@@ -159,7 +158,7 @@
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="120dp"
+                    android:layout_height="180dp"
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:background="@drawable/card_feature"
@@ -167,12 +166,11 @@
                     android:padding="16dp"
                     android:layout_marginStart="8dp">
 
-                    <TextView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:text="⏰"
-                        android:textSize="24sp"
-                        android:gravity="center"
+                    <ImageView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/cham_cong"
+                        android:scaleType="centerCrop"
                         android:layout_marginBottom="8dp" />
 
                     <TextView
@@ -196,7 +194,7 @@
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="120dp"
+                    android:layout_height="180dp"
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:background="@drawable/card_feature"
@@ -204,12 +202,11 @@
                     android:padding="16dp"
                     android:layout_marginEnd="8dp">
 
-                    <TextView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:text="🏖️"
-                        android:textSize="24sp"
-                        android:gravity="center"
+                    <ImageView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/quan_ly_nghi_phep"
+                        android:scaleType="centerCrop"
                         android:layout_marginBottom="8dp" />
 
                     <TextView
@@ -225,7 +222,7 @@
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="120dp"
+                    android:layout_height="180dp"
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:background="@drawable/card_feature"
@@ -233,12 +230,11 @@
                     android:padding="16dp"
                     android:layout_marginStart="8dp">
 
-                    <TextView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:text="💰"
-                        android:textSize="24sp"
-                        android:gravity="center"
+                    <ImageView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/tinh_luong"
+                        android:scaleType="centerCrop"
                         android:layout_marginBottom="8dp" />
 
                     <TextView
