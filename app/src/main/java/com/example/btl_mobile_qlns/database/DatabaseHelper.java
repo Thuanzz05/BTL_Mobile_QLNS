@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
     
     private static final String DATABASE_NAME = "qlns.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
     
     public static final String TABLE_CHUC_VU = "ChucVu";
     public static final String TABLE_PHONG_BAN = "PhongBan";
@@ -68,14 +68,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (oldVersion < 2) {
             db.execSQL("ALTER TABLE " + TABLE_NHAN_VIEN + " ADD COLUMN HinhAnh TEXT");
         }
-        if (oldVersion < 3) {
-            // Xóa dữ liệu cũ và tạo lại với cấu trúc mới
+        if (oldVersion < 4) {
+            // Xóa hoàn toàn dữ liệu cũ và tạo lại với cấu trúc mới
             db.execSQL("DELETE FROM " + TABLE_TAI_KHOAN);
             db.execSQL("DELETE FROM " + TABLE_NHAN_VIEN);
             db.execSQL("DELETE FROM " + TABLE_PHONG_BAN);
             db.execSQL("DELETE FROM " + TABLE_CHUC_VU);
             
-            // Tạo lại dữ liệu mẫu
+            // Tạo lại dữ liệu mẫu với admin riêng
             insertSampleData(db);
         }
     }
