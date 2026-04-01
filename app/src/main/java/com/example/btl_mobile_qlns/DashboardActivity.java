@@ -18,7 +18,7 @@ import com.example.btl_mobile_qlns.database.DatabaseHelper;
 public class DashboardActivity extends AppCompatActivity {
 
     private TextView tvWelcome;
-    private Button btnQuanLyNV, btnChamCong, btnNghiPhep, btnLuong, btnDangXuat;
+    private Button btnQuanLyNV, btnChamCong, btnNghiPhep, btnLuong, btnThongTin, btnDangXuat;
     
     private DatabaseHelper dbHelper;
     private String currentUsername;
@@ -47,6 +47,7 @@ public class DashboardActivity extends AppCompatActivity {
         btnChamCong = findViewById(R.id.btn_cham_cong);
         btnNghiPhep = findViewById(R.id.btn_nghi_phep);
         btnLuong = findViewById(R.id.btn_luong);
+        btnThongTin = findViewById(R.id.btn_thong_tin);
         btnDangXuat = findViewById(R.id.btn_dang_xuat);
     }
     
@@ -68,12 +69,42 @@ public class DashboardActivity extends AppCompatActivity {
             tvWelcome.setText("Chào mừng đến với hệ thống QLNS!");
             currentRole = "Employee";
         }
+        
+        // Áp dụng phân quyền
+        applyPermissions();
+    }
+    
+    private void applyPermissions() {
+        // Chỉ Admin, HR, Manager mới thấy nút Quản lý nhân viên
+        if (isAdminOrHR()) {
+            btnQuanLyNV.setVisibility(android.view.View.VISIBLE);
+        } else {
+            btnQuanLyNV.setVisibility(android.view.View.GONE);
+        }
+        
+        // Admin không cần chấm công (vì không phải nhân viên)
+        if ("Admin".equals(currentRole)) {
+            btnChamCong.setVisibility(android.view.View.GONE);
+        } else {
+            btnChamCong.setVisibility(android.view.View.VISIBLE);
+        }
+        
+        // Chỉ Admin và HR mới thấy nút Quản lý lương
+        if ("Admin".equals(currentRole) || "HR".equals(currentRole)) {
+            btnLuong.setVisibility(android.view.View.VISIBLE);
+        } else {
+            btnLuong.setVisibility(android.view.View.GONE);
+        }
     }
     
     private void setupButtons() {
         btnQuanLyNV.setOnClickListener(v -> {
-            Intent intent = new Intent(DashboardActivity.this, QuanLyNhanVienActivity.class);
-            startActivity(intent);
+            if (isAdminOrHR()) {
+                Intent intent = new Intent(DashboardActivity.this, QuanLyNhanVienActivity.class);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "Bạn không có quyền truy cập chức năng này", Toast.LENGTH_SHORT).show();
+            }
         });
         
         btnChamCong.setOnClickListener(v -> {
@@ -87,6 +118,10 @@ public class DashboardActivity extends AppCompatActivity {
         });
         
         btnLuong.setOnClickListener(v -> {
+            Toast.makeText(this, "Chức năng đang phát triển", Toast.LENGTH_SHORT).show();
+        });
+        
+        btnThongTin.setOnClickListener(v -> {
             Toast.makeText(this, "Chức năng đang phát triển", Toast.LENGTH_SHORT).show();
         });
         
