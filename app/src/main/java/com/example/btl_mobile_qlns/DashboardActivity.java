@@ -75,25 +75,37 @@ public class DashboardActivity extends AppCompatActivity {
     }
     
     private void applyPermissions() {
-        // Chỉ Admin, HR, Manager mới thấy nút Quản lý nhân viên
-        if (isAdminOrHR()) {
-            btnQuanLyNV.setVisibility(android.view.View.VISIBLE);
-        } else {
-            btnQuanLyNV.setVisibility(android.view.View.GONE);
-        }
-        
-        // Admin không cần chấm công (vì không phải nhân viên)
+        // Admin: Full quyền tất cả chức năng
         if ("Admin".equals(currentRole)) {
-            btnChamCong.setVisibility(android.view.View.GONE);
-        } else {
-            btnChamCong.setVisibility(android.view.View.VISIBLE);
-        }
-        
-        // Chỉ Admin và HR mới thấy nút Quản lý lương
-        if ("Admin".equals(currentRole) || "HR".equals(currentRole)) {
+            btnQuanLyNV.setVisibility(android.view.View.VISIBLE);
+            btnChamCong.setVisibility(android.view.View.VISIBLE); // Admin có thể xem chấm công của tất cả
+            btnNghiPhep.setVisibility(android.view.View.VISIBLE);
             btnLuong.setVisibility(android.view.View.VISIBLE);
-        } else {
+            btnThongTin.setVisibility(android.view.View.VISIBLE);
+        }
+        // HR: Chuyên về nhân sự - quản lý nhân viên, lương, nghỉ phép
+        else if ("HR".equals(currentRole)) {
+            btnQuanLyNV.setVisibility(android.view.View.VISIBLE);
+            btnChamCong.setVisibility(android.view.View.VISIBLE);
+            btnNghiPhep.setVisibility(android.view.View.VISIBLE);
+            btnLuong.setVisibility(android.view.View.VISIBLE); // HR quản lý lương
+            btnThongTin.setVisibility(android.view.View.VISIBLE);
+        }
+        // Manager: Quản lý cấp trung - chỉ quản lý nhân viên, không quản lý lương
+        else if ("Manager".equals(currentRole)) {
+            btnQuanLyNV.setVisibility(android.view.View.VISIBLE);
+            btnChamCong.setVisibility(android.view.View.VISIBLE);
+            btnNghiPhep.setVisibility(android.view.View.VISIBLE);
+            btnLuong.setVisibility(android.view.View.GONE); // Manager không quản lý lương
+            btnThongTin.setVisibility(android.view.View.VISIBLE);
+        }
+        // Employee: Chỉ chấm công và nghỉ phép cá nhân
+        else {
+            btnQuanLyNV.setVisibility(android.view.View.GONE);
+            btnChamCong.setVisibility(android.view.View.VISIBLE);
+            btnNghiPhep.setVisibility(android.view.View.VISIBLE);
             btnLuong.setVisibility(android.view.View.GONE);
+            btnThongTin.setVisibility(android.view.View.VISIBLE);
         }
     }
     
