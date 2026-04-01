@@ -68,6 +68,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (oldVersion < 2) {
             db.execSQL("ALTER TABLE " + TABLE_NHAN_VIEN + " ADD COLUMN HinhAnh TEXT");
         }
+        if (oldVersion < 3) {
+            // Xóa dữ liệu cũ và tạo lại với cấu trúc mới
+            db.execSQL("DELETE FROM " + TABLE_TAI_KHOAN);
+            db.execSQL("DELETE FROM " + TABLE_NHAN_VIEN);
+            db.execSQL("DELETE FROM " + TABLE_PHONG_BAN);
+            db.execSQL("DELETE FROM " + TABLE_CHUC_VU);
+            
+            // Tạo lại dữ liệu mẫu
+            insertSampleData(db);
+        }
     }
     
     private void insertSampleData(SQLiteDatabase db) {
