@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="@android:color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:id="@+id/tv_ngay_cham_cong"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="01/04/2024"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#333" />
+
+        <TextView
+            android:id="@+id/tv_trang_thai"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Có mặt"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:background="#E8F5E8"
+            android:padding="4dp"
+            android:textColor="#4CAF50" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Giờ vào"
+                android:textSize="12sp"
+                android:textColor="#666" />
+
+            <TextView
+                android:id="@+id/tv_gio_vao"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="08:00"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#2196F3" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Giờ ra"
+                android:textSize="12sp"
+                android:textColor="#666" />
+
+            <TextView
+                android:id="@+id/tv_gio_ra"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="17:30"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#FF5722" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Số giờ"
+                android:textSize="12sp"
+                android:textColor="#666" />
+
+            <TextView
+                android:id="@+id/tv_so_gio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="8.5h"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#4CAF50" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

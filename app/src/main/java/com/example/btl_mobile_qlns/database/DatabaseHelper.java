@@ -480,4 +480,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return 0;
         }
     }
+
+    public Cursor getAttendanceHistory(String maNhanVien, int limit) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT NgayChamCong, GioVao, GioRa, SoGioLam, TrangThai FROM " + TABLE_CHAM_CONG + 
+                      " WHERE MaNhanVien = ? ORDER BY NgayChamCong DESC LIMIT ?";
+        return db.rawQuery(query, new String[]{maNhanVien, String.valueOf(limit)});
+    }
 }

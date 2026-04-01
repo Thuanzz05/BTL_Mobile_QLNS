@@ -1,5 +1,6 @@
 package com.example.btl_mobile_qlns;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ListView;
@@ -9,9 +10,12 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.btl_mobile_qlns.database.DatabaseHelper;
+import com.example.btl_mobile_qlns.models.ChamCong;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class ChamCongActivity extends AppCompatActivity {
@@ -24,6 +28,8 @@ public class ChamCongActivity extends AppCompatActivity {
     private String currentUsername;
     private String maNhanVien;
     private SimpleDateFormat timeFormat, dateFormat;
+    private ChamCongAdapter adapter;
+    private List<ChamCong> listChamCong;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +41,7 @@ public class ChamCongActivity extends AppCompatActivity {
         setupFormats();
         updateCurrentTime();
         loadTodayStatus();
+        loadAttendanceHistory();
         setupButtons();
     }
     
@@ -92,6 +99,29 @@ public class ChamCongActivity extends AppCompatActivity {
             btnChamCongRa.setEnabled(false);
         }
     }
+
+    private void loadAttendanceHistory() {
+        if (maNhanVien == null) return;
+
+        listChamCong = new ArrayList<>();
+        Cursor cursor = dbHelper.getAttendanceHistory(maNhanVien, 30); // Lấy 30 ngày gần nhất
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                String ngay = cursor.getString(cursor.getColumnIndexOrThrow("NgayChamCong"));
+                String gioVao = cursor.getString(cursor.getColumnIndexOrThrow("GioVao"));
+                String gioRa = cursor.getString(cursor.getColumnIndexOrThrow("GioRa"));
+                double soGio = cursor.getDouble(cursor.getColumnIndexOrThrow("SoGioLam"));
+                String trangThai = cursor.getString(cursor.getColumnIndexOrThrow("TrangThai"));
+
+                listChamCong.add(new ChamCong(ngay, gioVao, gioRa, soGio, trangThai));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        adapter = new ChamCongAdapter(this, listChamCong);
+        lvLichSuChamCong.setAdapter(adapter);
+    }
     
     private void setupButtons() {
         btnChamCongVao.setOnClickListener(v -> chamCongVao());
@@ -113,6 +143,7 @@ public class ChamCongActivity extends AppCompatActivity {
         if (success) {
             Toast.makeText(this, "Chấm công vào thành công: " + currentTime, Toast.LENGTH_SHORT).show();
             loadTodayStatus();
+            loadAttendanceHistory(); // Refresh lịch sử
         } else {
             Toast.makeText(this, "Lỗi khi chấm công vào", Toast.LENGTH_SHORT).show();
         }
@@ -133,6 +164,7 @@ public class ChamCongActivity extends AppCompatActivity {
         if (success) {
             Toast.makeText(this, "Chấm công ra thành công: " + currentTime, Toast.LENGTH_SHORT).show();
             loadTodayStatus();
+            loadAttendanceHistory(); // Refresh lịch sử
         } else {
             Toast.makeText(this, "Lỗi khi chấm công ra", Toast.LENGTH_SHORT).show();
         }
