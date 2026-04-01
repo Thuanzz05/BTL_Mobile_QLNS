@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
     
     private static final String DATABASE_NAME = "qlns.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     
     public static final String TABLE_CHUC_VU = "ChucVu";
     public static final String TABLE_PHONG_BAN = "PhongBan";
@@ -71,13 +71,120 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
     
     private void insertSampleData(SQLiteDatabase db) {
-        db.execSQL("INSERT INTO " + TABLE_PHONG_BAN + " (MaPhongBan, TenPhongBan) VALUES ('PB001', 'Phòng Hành chính')");
-        db.execSQL("INSERT INTO " + TABLE_PHONG_BAN + " (MaPhongBan, TenPhongBan) VALUES ('PB002', 'Phòng Kỹ thuật')");
-        db.execSQL("INSERT INTO " + TABLE_CHUC_VU + " (MaChucVu, TenChucVu, MucLuongCoBan) VALUES ('CV001', 'Giám đốc', 20000000)");
-        db.execSQL("INSERT INTO " + TABLE_CHUC_VU + " (MaChucVu, TenChucVu, MucLuongCoBan) VALUES ('CV002', 'Trưởng phòng', 15000000)");
-        db.execSQL("INSERT INTO " + TABLE_CHUC_VU + " (MaChucVu, TenChucVu, MucLuongCoBan) VALUES ('CV003', 'Nhân viên', 8000000)");
-        db.execSQL("INSERT INTO " + TABLE_NHAN_VIEN + " (MaNhanVien, HoTen, NgayVaoLam, MaPhongBan, MaChucVu) VALUES ('ADMIN', 'Administrator', '2023-01-01', 'PB001', 'CV001')");
-        db.execSQL("INSERT INTO " + TABLE_TAI_KHOAN + " (MaNhanVien, TenDangNhap, MatKhau, VaiTro) VALUES ('ADMIN', 'admin', 'admin123', 'Admin')");
+        // Thêm dữ liệu Chức vụ
+        ContentValues cv1 = new ContentValues();
+        cv1.put("MaChucVu", "CV001");
+        cv1.put("TenChucVu", "Giám đốc");
+        cv1.put("MucLuongCoBan", 50000000);
+        cv1.put("TrangThai", 1);
+        db.insert(TABLE_CHUC_VU, null, cv1);
+        
+        ContentValues cv2 = new ContentValues();
+        cv2.put("MaChucVu", "CV002");
+        cv2.put("TenChucVu", "Trưởng phòng");
+        cv2.put("MucLuongCoBan", 25000000);
+        cv2.put("TrangThai", 1);
+        db.insert(TABLE_CHUC_VU, null, cv2);
+        
+        ContentValues cv3 = new ContentValues();
+        cv3.put("MaChucVu", "CV003");
+        cv3.put("TenChucVu", "Nhân viên");
+        cv3.put("MucLuongCoBan", 12000000);
+        cv3.put("TrangThai", 1);
+        db.insert(TABLE_CHUC_VU, null, cv3);
+        
+        // Thêm dữ liệu Phòng ban
+        ContentValues pb1 = new ContentValues();
+        pb1.put("MaPhongBan", "PB001");
+        pb1.put("TenPhongBan", "Phòng Nhân sự");
+        pb1.put("TrangThai", 1);
+        db.insert(TABLE_PHONG_BAN, null, pb1);
+        
+        ContentValues pb2 = new ContentValues();
+        pb2.put("MaPhongBan", "PB002");
+        pb2.put("TenPhongBan", "Phòng Kế toán");
+        pb2.put("TrangThai", 1);
+        db.insert(TABLE_PHONG_BAN, null, pb2);
+        
+        ContentValues pb3 = new ContentValues();
+        pb3.put("MaPhongBan", "PB003");
+        pb3.put("TenPhongBan", "Phòng Kỹ thuật");
+        pb3.put("TrangThai", 1);
+        db.insert(TABLE_PHONG_BAN, null, pb3);
+        
+        // Thêm dữ liệu Nhân viên
+        ContentValues nv1 = new ContentValues();
+        nv1.put("MaNhanVien", "NV001");
+        nv1.put("HoTen", "Nguyễn Văn An");
+        nv1.put("NgaySinh", "1985-05-15");
+        nv1.put("GioiTinh", "Nam");
+        nv1.put("SoDienThoai", "0901234567");
+        nv1.put("Email", "an@company.com");
+        nv1.put("NgayVaoLam", "2020-01-20");
+        nv1.put("MaPhongBan", "PB001");
+        nv1.put("MaChucVu", "CV002"); // Trưởng phòng thay vì Giám đốc
+        nv1.put("TrangThaiLamViec", "Đang làm việc");
+        db.insert(TABLE_NHAN_VIEN, null, nv1);
+        
+        ContentValues nv2 = new ContentValues();
+        nv2.put("MaNhanVien", "NV002");
+        nv2.put("HoTen", "Trần Thị Bình");
+        nv2.put("NgaySinh", "1990-08-22");
+        nv2.put("GioiTinh", "Nữ");
+        nv2.put("SoDienThoai", "0901234568");
+        nv2.put("Email", "binh@company.com");
+        nv2.put("NgayVaoLam", "2020-02-01");
+        nv2.put("MaPhongBan", "PB001");
+        nv2.put("MaChucVu", "CV002");
+        nv2.put("TrangThaiLamViec", "Đang làm việc");
+        db.insert(TABLE_NHAN_VIEN, null, nv2);
+        
+        ContentValues nv3 = new ContentValues();
+        nv3.put("MaNhanVien", "NV003");
+        nv3.put("HoTen", "Lê Văn Cường");
+        nv3.put("NgaySinh", "1988-12-10");
+        nv3.put("GioiTinh", "Nam");
+        nv3.put("SoDienThoai", "0901234569");
+        nv3.put("Email", "cuong@company.com");
+        nv3.put("NgayVaoLam", "2020-03-15");
+        nv3.put("MaPhongBan", "PB002");
+        nv3.put("MaChucVu", "CV002");
+        nv3.put("TrangThaiLamViec", "Đang làm việc");
+        db.insert(TABLE_NHAN_VIEN, null, nv3);
+        
+        // Thêm tài khoản ADMIN riêng (không liên kết với nhân viên)
+        ContentValues tkAdmin = new ContentValues();
+        tkAdmin.put("MaNhanVien", "ADMIN"); // Mã đặc biệt cho admin
+        tkAdmin.put("TenDangNhap", "admin");
+        tkAdmin.put("MatKhau", "123456");
+        tkAdmin.put("VaiTro", "Admin");
+        tkAdmin.put("TrangThai", 1);
+        db.insert(TABLE_TAI_KHOAN, null, tkAdmin);
+        
+        // Thêm tài khoản cho nhân viên
+        ContentValues tk1 = new ContentValues();
+        tk1.put("MaNhanVien", "NV001");
+        tk1.put("TenDangNhap", "manager");
+        tk1.put("MatKhau", "123456");
+        tk1.put("VaiTro", "Manager");
+        tk1.put("TrangThai", 1);
+        db.insert(TABLE_TAI_KHOAN, null, tk1);
+        
+        ContentValues tk2 = new ContentValues();
+        tk2.put("MaNhanVien", "NV002");
+        tk2.put("TenDangNhap", "hr");
+        tk2.put("MatKhau", "123456");
+        tk2.put("VaiTro", "HR");
+        tk2.put("TrangThai", 1);
+        db.insert(TABLE_TAI_KHOAN, null, tk2);
+        
+        ContentValues tk3 = new ContentValues();
+        tk3.put("MaNhanVien", "NV003");
+        tk3.put("TenDangNhap", "user");
+        tk3.put("MatKhau", "123456");
+        tk3.put("VaiTro", "Employee");
+        tk3.put("TrangThai", 1);
+        db.insert(TABLE_TAI_KHOAN, null, tk3);
     }
 
     public boolean addEmployee(String maNV, String hoTen, String ngaySinh, String gioiTinh, 
@@ -127,8 +234,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public Cursor getUserInfo(String username) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT nv.HoTen, tk.VaiTro FROM " + TABLE_TAI_KHOAN + " tk " +
-                "JOIN " + TABLE_NHAN_VIEN + " nv ON tk.MaNhanVien = nv.MaNhanVien " +
+        String query = "SELECT " +
+                "CASE WHEN tk.MaNhanVien = 'ADMIN' THEN 'Administrator' ELSE nv.HoTen END as HoTen, " +
+                "tk.VaiTro " +
+                "FROM " + TABLE_TAI_KHOAN + " tk " +
+                "LEFT JOIN " + TABLE_NHAN_VIEN + " nv ON tk.MaNhanVien = nv.MaNhanVien " +
                 "WHERE tk.TenDangNhap = ?";
         return db.rawQuery(query, new String[]{username});
     }
