@@ -368,4 +368,123 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Cursor getAllPositions() {
         return getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_CHUC_VU + " WHERE TrangThai = 1", null);
     }
+
+    // Methods cho chấm công
+    public String getMaNhanVienByUsername(String username) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT MaNhanVien FROM " + TABLE_TAI_KHOAN + " WHERE TenDangNhap = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{username});
+        String maNV = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            maNV = cursor.getString(0);
+            cursor.close();
+        }
+        return maNV;
+    }
+
+    public boolean[] getTodayAttendanceStatus(String maNhanVien, String date) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT GioVao, GioRa FROM " + TABLE_CHAM_CONG + 
+                      " WHERE MaNhanVien = ? AND NgayChamCong = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{maNhanVien, date});
+        
+        boolean hasCheckedIn = false;
+        boolean hasCheckedOut = false;
+        
+        if (cursor != null && cursor.moveToFirst()) {
+            String gioVao = cursor.getString(0);
+            String gioRa = cursor.getString(1);
+            
+            hasCheckedIn = (gioVao != null && !gioVao.isEmpty());
+            hasCheckedOut = (gioRa != null && !gioRa.isEmpty());
+            
+            cursor.close();
+        }
+        
+        return new boolean[]{hasCheckedIn, hasCheckedOut};
+    }
+
+    public boolean chamCongVao(String maNhanVien, String date, String time) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        
+        // Kiểm tra xem đã có record cho ngày hôm nay chưa
+        String checkQuery = "SELECT MaChamCong FROM " + TABLE_CHAM_CONG + 
+                           " WHERE MaNhanVien = ? AND NgayChamCong = ?";
+        Cursor cursor = db.rawQuery(checkQuery, new String[]{maNhanVien, date});
+        
+        boolean exists = cursor.getCount() > 0;
+        cursor.close();
+        
+        if (exists) {
+            // Update existing record
+            ContentValues values = new ContentValues();
+            values.put("GioVao", time);
+            values.put("TrangThai", "Có mặt");
+            
+            int result = db.update(TABLE_CHAM_CONG, values, 
+                                 "MaNhanVien = ? AND NgayChamCong = ?", 
+                                 new String[]{maNhanVien, date});
+            return result > 0;
+        } else {
+            // Insert new record
+            ContentValues values = new ContentValues();
+            values.put("MaNhanVien", maNhanVien);
+            values.put("NgayChamCong", date);
+            values.put("GioVao", time);
+            values.put("SoGioLam", 0);
+            values.put("TrangThai", "Có mặt");
+            
+            long result = db.insert(TABLE_CHAM_CONG, null, values);
+            return result != -1;
+        }
+    }
+
+    public boolean chamCongRa(String maNhanVien, String date, String time) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        
+        // Tính số giờ làm việc
+        String query = "SELECT GioVao FROM " + TABLE_CHAM_CONG + 
+                      " WHERE MaNhanVien = ? AND NgayChamCong = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{maNhanVien, date});
+        
+        double soGioLam = 0;
+        if (cursor != null && cursor.moveToFirst()) {
+            String gioVao = cursor.getString(0);
+            if (gioVao != null) {
+                soGioLam = tinhSoGioLam(gioVao, time);
+            }
+            cursor.close();
+        }
+        
+        ContentValues values = new ContentValues();
+        values.put("GioRa", time);
+        values.put("SoGioLam", soGioLam);
+        
+        int result = db.update(TABLE_CHAM_CONG, values, 
+                             "MaNhanVien = ? AND NgayChamCong = ?", 
+                             new String[]{maNhanVien, date});
+        return result > 0;
+    }
+
+    private double tinhSoGioLam(String gioVao, String gioRa) {
+        try {
+            String[] vao = gioVao.split(":");
+            String[] ra = gioRa.split(":");
+            
+            int gioVaoMinutes = Integer.parseInt(vao[0]) * 60 + Integer.parseInt(vao[1]);
+            int gioRaMinutes = Integer.parseInt(ra[0]) * 60 + Integer.parseInt(ra[1]);
+            
+            int diffMinutes = gioRaMinutes - gioVaoMinutes;
+            return diffMinutes / 60.0; // Chuyển về giờ
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    public Cursor getAttendanceHistory(String maNhanVien, int limit) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT NgayChamCong, GioVao, GioRa, SoGioLam, TrangThai FROM " + TABLE_CHAM_CONG + 
+                      " WHERE MaNhanVien = ? ORDER BY NgayChamCong DESC LIMIT ?";
+        return db.rawQuery(query, new String[]{maNhanVien, String.valueOf(limit)});
+    }
 }
