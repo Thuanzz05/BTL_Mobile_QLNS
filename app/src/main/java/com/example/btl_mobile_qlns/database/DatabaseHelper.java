@@ -341,7 +341,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if (cursor.moveToFirst()) lastCode = cursor.getString(0).trim();
             cursor.close();
         }
-        if (lastCode == null) return "NV001";
+        if (lastCode == null) return "NV002"; // Bắt đầu từ NV002 thay vì NV001
         java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("^([a-zA-Z]+)(\\d+)$").matcher(lastCode);
         if (matcher.find()) {
             String prefix = matcher.group(1);
@@ -349,9 +349,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             try {
                 int nextNumber = Integer.parseInt(numberStr) + 1;
                 return String.format("%s%0" + numberStr.length() + "d", prefix, nextNumber);
-            } catch (Exception e) { return "NV001"; }
+            } catch (Exception e) { return "NV002"; }
         }
-        return "NV001";
+        return "NV002";
     }
 
     public boolean deleteEmployee(String maNhanVien) {

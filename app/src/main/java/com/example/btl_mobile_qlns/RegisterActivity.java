@@ -69,6 +69,10 @@ public class RegisterActivity extends AppCompatActivity {
     
     private void setupDatabase() {
         dbHelper = new DatabaseHelper(this);
+        
+        // Tự động tạo mã nhân viên và disable input
+        etMaNhanVien.setText(dbHelper.getNextEmployeeCode());
+        etMaNhanVien.setEnabled(false);
     }
     
     private void setupSpinners() {
