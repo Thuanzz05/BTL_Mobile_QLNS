@@ -41,6 +41,10 @@
             android:name=".ThemNhanVienActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ChamCongActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>
