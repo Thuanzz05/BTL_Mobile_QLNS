@@ -134,9 +134,14 @@ public class DashboardActivity extends AppCompatActivity {
         });
         
         btnThongTin.setOnClickListener(v -> {
-            Intent intent = new Intent(DashboardActivity.this, ThongTinCaNhanActivity.class);
-            intent.putExtra("username", currentUsername);
-            startActivity(intent);
+            Toast.makeText(this, "Đang mở trang thông tin cá nhân...", Toast.LENGTH_SHORT).show();
+            try {
+                Intent intent = new Intent(DashboardActivity.this, ThongTinCaNhanActivity.class);
+                intent.putExtra("username", currentUsername);
+                startActivity(intent);
+            } catch (Exception e) {
+                Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
         });
         
         btnDangXuat.setOnClickListener(v -> {
