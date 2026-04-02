@@ -32,18 +32,12 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_thong_tin_ca_nhan);
         
-        try {
-            setContentView(R.layout.activity_thong_tin_ca_nhan);
-            
-            initViews();
-            setupDatabase();
-            loadUserInfo();
-            setupButtons();
-        } catch (Exception e) {
-            Toast.makeText(this, "Lỗi khởi tạo: " + e.getMessage(), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
+        initViews();
+        setupDatabase();
+        loadUserInfo();
+        setupButtons();
     }
     
     private void initViews() {
