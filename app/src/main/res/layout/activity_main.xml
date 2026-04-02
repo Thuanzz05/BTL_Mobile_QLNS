@@ -335,7 +335,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="99.8%"
+                        android:text="83,6%"
                         android:textSize="28sp"
                         android:textStyle="bold"
                         android:textColor="@android:color/white" />
@@ -764,7 +764,7 @@
                 android:text="TRẢI NGHIỆM NGAY"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:textColor="#FF6B35"
+                android:textColor="@color/white"
                 android:background="@drawable/btn_bat_dau"
                 android:elevation="4dp" />
 
@@ -792,16 +792,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Phát triển bởi nhóm sinh viên CNTT\nTrường Đại học Công nghệ Thông tin"
-                android:textSize="12sp"
-                android:textColor="#B0BEC5"
-                android:gravity="center"
-                android:layout_marginBottom="12dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="© 2024 Smart HR. Bảo lưu mọi quyền."
+                android:text="© 2026 Smart HR. Bảo lưu mọi quyền."
                 android:textSize="10sp"
                 android:textColor="#78909C"
                 android:gravity="center" />
