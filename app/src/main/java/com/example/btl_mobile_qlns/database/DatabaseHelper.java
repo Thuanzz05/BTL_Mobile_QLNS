@@ -487,4 +487,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                       " WHERE MaNhanVien = ? ORDER BY NgayChamCong DESC LIMIT ?";
         return db.rawQuery(query, new String[]{maNhanVien, String.valueOf(limit)});
     }
+
+    // Methods cho thông tin cá nhân
+    public Cursor getEmployeeByMa(String maNhanVien) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_NHAN_VIEN + " WHERE MaNhanVien = ?";
+        return db.rawQuery(query, new String[]{maNhanVien});
+    }
+
+    public boolean updateEmployeePersonalInfo(String maNhanVien, String hoTen, String ngaySinh, 
+                                            String gioiTinh, String soDienThoai, String email) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("HoTen", hoTen);
+        values.put("NgaySinh", ngaySinh);
+        values.put("GioiTinh", gioiTinh);
+        values.put("SoDienThoai", soDienThoai);
+        values.put("Email", email);
+        
+        int result = db.update(TABLE_NHAN_VIEN, values, "MaNhanVien = ?", new String[]{maNhanVien});
+        return result > 0;
+    }
 }
