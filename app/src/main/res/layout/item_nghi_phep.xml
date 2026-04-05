@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="@android:color/white"
+    android:layout_marginBottom="8dp"
+    android:elevation="1dp">
+
+    <!-- Thông tin nhân viên (chỉ hiện với Admin/HR/Manager) -->
+    <TextView
+        android:id="@+id/tv_ma_nv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mã NV: NV001"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#333"
+        android:layout_marginBottom="4dp" />
+
+    <TextView
+        android:id="@+id/tv_ho_ten"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Họ tên: Nguyễn Văn A"
+        android:textSize="14sp"
+        android:textColor="#666"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone" />
+
+    <!-- Thông tin nghỉ phép -->
+    <TextView
+        android:id="@+id/tv_ngay_nghi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Từ 2024-01-15 đến 2024-01-17"
+        android:textSize="14sp"
+        android:textColor="#333"
+        android:layout_marginBottom="4dp" />
+
+    <TextView
+        android:id="@+id/tv_so_ngay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Số ngày: 3"
+        android:textSize="14sp"
+        android:textColor="#666"
+        android:layout_marginBottom="4dp" />
+
+    <TextView
+        android:id="@+id/tv_ly_do"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Lý do: Nghỉ phép cá nhân"
+        android:textSize="14sp"
+        android:textColor="#666"
+        android:layout_marginBottom="8dp"
+        android:maxLines="2"
+        android:ellipsize="end" />
+
+    <!-- Trạng thái -->
+    <TextView
+        android:id="@+id/tv_trang_thai"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Trạng thái: Chờ duyệt"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Buttons duyệt/từ chối (chỉ hiện với Admin/HR/Manager) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <Button
+            android:id="@+id/btn_tu_choi"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="TỪ CHỐI"
+            android:textSize="12sp"
+            android:textColor="@android:color/holo_red_dark"
+            android:background="@drawable/btn_secondary"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone"
+            android:minWidth="80dp" />
+
+        <Button
+            android:id="@+id/btn_duyet"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="DUYỆT"
+            android:textSize="12sp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/btn_primary"
+            android:visibility="gone"
+            android:minWidth="80dp" />
+
+    </LinearLayout>
+
+</LinearLayout>
