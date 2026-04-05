@@ -196,7 +196,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         tk4.put("TrangThai", 1);
         db.insert(TABLE_TAI_KHOAN, null, tk4);
     }
-
+    }
+    
     public boolean addEmployee(String maNV, String hoTen, String ngaySinh, String gioiTinh, 
                               String sdt, String email, String maPB, String maCV, String hinhAnh) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -481,13 +482,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public Cursor getAttendanceHistory(String maNhanVien, int limit) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT NgayChamCong, GioVao, GioRa, SoGioLam, TrangThai FROM " + TABLE_CHAM_CONG + 
-                      " WHERE MaNhanVien = ? ORDER BY NgayChamCong DESC LIMIT ?";
-        return db.rawQuery(query, new String[]{maNhanVien, String.valueOf(limit)});
-    }
-
     // Methods cho thông tin cá nhân
     public Cursor getEmployeeByMa(String maNhanVien) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -562,8 +556,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public Cursor getAllAttendanceHistory(int limit) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM " + TABLE_CHAM_CONG + " ORDER BY NgayChamCong DESC LIMIT ?";
-        return db.rawQuery(query, new String[]{String.valueOf(limit)});
+        try {
+            String query = "SELECT * FROM " + TABLE_CHAM_CONG + " ORDER BY NgayChamCong DESC, MaNhanVien ASC LIMIT ?";
+            return db.rawQuery(query, new String[]{String.valueOf(limit)});
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Cursor getAttendanceHistory(String maNhanVien, int limit) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        try {
+            String query = "SELECT * FROM " + TABLE_CHAM_CONG + 
+                          " WHERE MaNhanVien = ? ORDER BY NgayChamCong DESC LIMIT ?";
+            return db.rawQuery(query, new String[]{maNhanVien, String.valueOf(limit)});
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public boolean updateAttendance(String maNhanVien, String ngayChamCong, String gioVao, String gioRa) {

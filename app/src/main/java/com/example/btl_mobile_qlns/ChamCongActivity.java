@@ -97,40 +97,53 @@ public class ChamCongActivity extends AppCompatActivity {
     }
     
     private void setupEmployeeSpinner() {
-        listMaNhanVien = new ArrayList<>();
-        listTenNhanVien = new ArrayList<>();
-        
-        // Thêm option "Tất cả nhân viên"
-        listMaNhanVien.add("ALL");
-        listTenNhanVien.add("Tất cả nhân viên");
-        
-        Cursor cursor = dbHelper.getAllEmployees();
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                String maNV = cursor.getString(cursor.getColumnIndexOrThrow("MaNhanVien"));
-                String hoTen = cursor.getString(cursor.getColumnIndexOrThrow("HoTen"));
-                
-                listMaNhanVien.add(maNV);
-                listTenNhanVien.add(maNV + " - " + hoTen);
-            } while (cursor.moveToNext());
-            cursor.close();
-        }
-        
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, 
-            android.R.layout.simple_spinner_item, listTenNhanVien);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spNhanVien.setAdapter(adapter);
-        
-        // Listener để load dữ liệu khi chọn nhân viên
-        spNhanVien.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                loadAttendanceHistory();
+        try {
+            listMaNhanVien = new ArrayList<>();
+            listTenNhanVien = new ArrayList<>();
+            
+            // Thêm option "Tất cả nhân viên"
+            listMaNhanVien.add("ALL");
+            listTenNhanVien.add("Tất cả nhân viên");
+            
+            Cursor cursor = dbHelper.getAllEmployees();
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    String maNV = cursor.getString(cursor.getColumnIndexOrThrow("MaNhanVien"));
+                    String hoTen = cursor.getString(cursor.getColumnIndexOrThrow("HoTen"));
+                    
+                    if (maNV != null && hoTen != null) {
+                        listMaNhanVien.add(maNV);
+                        listTenNhanVien.add(maNV + " - " + hoTen);
+                    }
+                } while (cursor.moveToNext());
+                cursor.close();
             }
             
-            @Override
-            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
-        });
+            if (spNhanVien != null && listTenNhanVien != null && !listTenNhanVien.isEmpty()) {
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(this, 
+                    android.R.layout.simple_spinner_item, listTenNhanVien);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spNhanVien.setAdapter(adapter);
+                
+                // Listener để load dữ liệu khi chọn nhân viên
+                spNhanVien.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                        try {
+                            loadAttendanceHistory();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    
+                    @Override
+                    public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Lỗi khi tải danh sách nhân viên", Toast.LENGTH_SHORT).show();
+        }
     }
     
     private void updateCurrentTime() {
@@ -167,55 +180,67 @@ public class ChamCongActivity extends AppCompatActivity {
     }
 
     public void loadAttendanceHistory() {
-        listChamCong = new ArrayList<>();
-        Cursor cursor;
-        
-        if ("Employee".equals(currentRole)) {
-            // Employee: Chỉ xem lịch sử của mình
-            if (maNhanVien == null) return;
-            cursor = dbHelper.getAttendanceHistory(maNhanVien, 30);
-        } else {
-            // Admin/HR/Manager: Xem theo nhân viên được chọn
-            int selectedPosition = spNhanVien.getSelectedItemPosition();
-            if (selectedPosition == 0) {
-                // Tất cả nhân viên
-                cursor = dbHelper.getAllAttendanceHistory(30);
+        try {
+            listChamCong = new ArrayList<>();
+            Cursor cursor;
+            
+            if ("Employee".equals(currentRole)) {
+                // Employee: Chỉ xem lịch sử của mình
+                if (maNhanVien == null) return;
+                cursor = dbHelper.getAttendanceHistory(maNhanVien, 30);
             } else {
-                String selectedMaNV = listMaNhanVien.get(selectedPosition);
-                cursor = dbHelper.getAttendanceHistory(selectedMaNV, 30);
+                // Admin/HR/Manager: Xem theo nhân viên được chọn
+                if (spNhanVien == null || listMaNhanVien == null || listMaNhanVien.isEmpty()) {
+                    // Fallback: load tất cả nếu spinner chưa sẵn sàng
+                    cursor = dbHelper.getAllAttendanceHistory(30);
+                } else {
+                    int selectedPosition = spNhanVien.getSelectedItemPosition();
+                    if (selectedPosition == 0) {
+                        // Tất cả nhân viên
+                        cursor = dbHelper.getAllAttendanceHistory(30);
+                    } else if (selectedPosition > 0 && selectedPosition < listMaNhanVien.size()) {
+                        String selectedMaNV = listMaNhanVien.get(selectedPosition);
+                        cursor = dbHelper.getAttendanceHistory(selectedMaNV, 30);
+                    } else {
+                        cursor = dbHelper.getAllAttendanceHistory(30);
+                    }
+                }
             }
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    String maNV = null;
+                    String hoTen = null;
+                    
+                    // Lấy thông tin nhân viên nếu không phải Employee
+                    if (!"Employee".equals(currentRole)) {
+                        maNV = cursor.getString(cursor.getColumnIndexOrThrow("MaNhanVien"));
+                        hoTen = dbHelper.getEmployeeNameByMa(maNV);
+                    }
+                    
+                    String ngay = cursor.getString(cursor.getColumnIndexOrThrow("NgayChamCong"));
+                    String gioVao = cursor.getString(cursor.getColumnIndexOrThrow("GioVao"));
+                    String gioRa = cursor.getString(cursor.getColumnIndexOrThrow("GioRa"));
+                    double soGio = cursor.getDouble(cursor.getColumnIndexOrThrow("SoGioLam"));
+                    String trangThai = cursor.getString(cursor.getColumnIndexOrThrow("TrangThai"));
+
+                    ChamCong chamCong = new ChamCong(ngay, gioVao, gioRa, soGio, trangThai);
+                    if (maNV != null) {
+                        chamCong.setMaNhanVien(maNV);
+                        chamCong.setHoTen(hoTen);
+                    }
+                    
+                    listChamCong.add(chamCong);
+                } while (cursor.moveToNext());
+                cursor.close();
+            }
+
+            adapter = new ChamCongAdapter(this, listChamCong, currentRole);
+            lvLichSuChamCong.setAdapter(adapter);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Lỗi khi tải lịch sử chấm công", Toast.LENGTH_SHORT).show();
         }
-
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                String maNV = null;
-                String hoTen = null;
-                
-                // Lấy thông tin nhân viên nếu không phải Employee
-                if (!"Employee".equals(currentRole)) {
-                    maNV = cursor.getString(cursor.getColumnIndexOrThrow("MaNhanVien"));
-                    hoTen = dbHelper.getEmployeeNameByMa(maNV);
-                }
-                
-                String ngay = cursor.getString(cursor.getColumnIndexOrThrow("NgayChamCong"));
-                String gioVao = cursor.getString(cursor.getColumnIndexOrThrow("GioVao"));
-                String gioRa = cursor.getString(cursor.getColumnIndexOrThrow("GioRa"));
-                double soGio = cursor.getDouble(cursor.getColumnIndexOrThrow("SoGioLam"));
-                String trangThai = cursor.getString(cursor.getColumnIndexOrThrow("TrangThai"));
-
-                ChamCong chamCong = new ChamCong(ngay, gioVao, gioRa, soGio, trangThai);
-                if (maNV != null) {
-                    chamCong.setMaNhanVien(maNV);
-                    chamCong.setHoTen(hoTen);
-                }
-                
-                listChamCong.add(chamCong);
-            } while (cursor.moveToNext());
-            cursor.close();
-        }
-
-        adapter = new ChamCongAdapter(this, listChamCong, currentRole);
-        lvLichSuChamCong.setAdapter(adapter);
     }
     
     private void setupButtons() {
