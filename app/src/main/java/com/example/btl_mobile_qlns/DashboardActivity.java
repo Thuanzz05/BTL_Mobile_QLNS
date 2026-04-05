@@ -126,7 +126,10 @@ public class DashboardActivity extends AppCompatActivity {
         });
         
         btnNghiPhep.setOnClickListener(v -> {
-            Toast.makeText(this, "Chức năng đang phát triển", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(DashboardActivity.this, NghiPhepActivity.class);
+            intent.putExtra("username", currentUsername);
+            intent.putExtra("role", currentRole);
+            startActivity(intent);
         });
         
         btnLuong.setOnClickListener(v -> {

@@ -49,6 +49,10 @@
             android:name=".ThongTinCaNhanActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".NghiPhepActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

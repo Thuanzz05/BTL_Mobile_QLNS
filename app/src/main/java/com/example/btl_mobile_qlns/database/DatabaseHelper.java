@@ -508,4 +508,55 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         int result = db.update(TABLE_NHAN_VIEN, values, "MaNhanVien = ?", new String[]{maNhanVien});
         return result > 0;
     }
+
+    // Methods cho nghỉ phép
+    public boolean submitLeaveRequest(String maNhanVien, String ngayBatDau, String ngayKetThuc, 
+                                    int soNgayNghi, String lyDo) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("MaNhanVien", maNhanVien);
+        values.put("NgayBatDau", ngayBatDau);
+        values.put("NgayKetThuc", ngayKetThuc);
+        values.put("SoNgayNghi", soNgayNghi);
+        values.put("LyDo", lyDo);
+        values.put("TrangThai", "Chờ duyệt");
+        
+        long result = db.insert(TABLE_NGHI_PHEP, null, values);
+        return result != -1;
+    }
+
+    public Cursor getLeaveHistory(String maNhanVien) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_NGHI_PHEP + 
+                      " WHERE MaNhanVien = ? ORDER BY NgayBatDau DESC";
+        return db.rawQuery(query, new String[]{maNhanVien});
+    }
+
+    public Cursor getAllLeaveRequests() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_NGHI_PHEP + " ORDER BY NgayBatDau DESC";
+        return db.rawQuery(query, null);
+    }
+
+    public boolean approveLeaveRequest(int maNghiPhep, String trangThai) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("TrangThai", trangThai);
+        
+        int result = db.update(TABLE_NGHI_PHEP, values, "MaNghiPhep = ?", 
+                             new String[]{String.valueOf(maNghiPhep)});
+        return result > 0;
+    }
+
+    public String getEmployeeNameByMa(String maNhanVien) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT HoTen FROM " + TABLE_NHAN_VIEN + " WHERE MaNhanVien = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{maNhanVien});
+        String hoTen = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            hoTen = cursor.getString(0);
+            cursor.close();
+        }
+        return hoTen;
+    }
 }
