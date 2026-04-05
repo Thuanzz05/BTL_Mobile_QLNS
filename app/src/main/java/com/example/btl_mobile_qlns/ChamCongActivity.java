@@ -130,9 +130,12 @@ public class ChamCongActivity extends AppCompatActivity {
                     @Override
                     public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
                         try {
-                            loadAttendanceHistory();
+                            if (listMaNhanVien != null && position >= 0 && position < listMaNhanVien.size()) {
+                                loadAttendanceHistory();
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
+                            Toast.makeText(ChamCongActivity.this, "Lỗi khi tải dữ liệu chấm công", Toast.LENGTH_SHORT).show();
                         }
                     }
                     
@@ -156,7 +159,7 @@ public class ChamCongActivity extends AppCompatActivity {
     }
     
     private void loadTodayStatus() {
-        if (maNhanVien == null || !"Employee".equals(currentRole)) return;
+        if (maNhanVien == null) return;
         
         String today = dateFormat.format(new Date());
         boolean[] status = dbHelper.getTodayAttendanceStatus(maNhanVien, today);
@@ -182,7 +185,7 @@ public class ChamCongActivity extends AppCompatActivity {
     public void loadAttendanceHistory() {
         try {
             listChamCong = new ArrayList<>();
-            Cursor cursor;
+            Cursor cursor = null;
             
             if ("Employee".equals(currentRole)) {
                 // Employee: Chỉ xem lịch sử của mình
@@ -200,7 +203,11 @@ public class ChamCongActivity extends AppCompatActivity {
                         cursor = dbHelper.getAllAttendanceHistory(30);
                     } else if (selectedPosition > 0 && selectedPosition < listMaNhanVien.size()) {
                         String selectedMaNV = listMaNhanVien.get(selectedPosition);
-                        cursor = dbHelper.getAttendanceHistory(selectedMaNV, 30);
+                        if (selectedMaNV != null && !selectedMaNV.isEmpty()) {
+                            cursor = dbHelper.getAttendanceHistory(selectedMaNV, 30);
+                        } else {
+                            cursor = dbHelper.getAllAttendanceHistory(30);
+                        }
                     } else {
                         cursor = dbHelper.getAllAttendanceHistory(30);
                     }
@@ -209,37 +216,61 @@ public class ChamCongActivity extends AppCompatActivity {
 
             if (cursor != null && cursor.moveToFirst()) {
                 do {
-                    String maNV = null;
-                    String hoTen = null;
-                    
-                    // Lấy thông tin nhân viên nếu không phải Employee
-                    if (!"Employee".equals(currentRole)) {
-                        maNV = cursor.getString(cursor.getColumnIndexOrThrow("MaNhanVien"));
-                        hoTen = dbHelper.getEmployeeNameByMa(maNV);
-                    }
-                    
-                    String ngay = cursor.getString(cursor.getColumnIndexOrThrow("NgayChamCong"));
-                    String gioVao = cursor.getString(cursor.getColumnIndexOrThrow("GioVao"));
-                    String gioRa = cursor.getString(cursor.getColumnIndexOrThrow("GioRa"));
-                    double soGio = cursor.getDouble(cursor.getColumnIndexOrThrow("SoGioLam"));
-                    String trangThai = cursor.getString(cursor.getColumnIndexOrThrow("TrangThai"));
+                    try {
+                        String maNV = null;
+                        String hoTen = null;
+                        
+                        // Lấy thông tin nhân viên nếu không phải Employee
+                        if (!"Employee".equals(currentRole)) {
+                            int maNVIndex = cursor.getColumnIndex("MaNhanVien");
+                            if (maNVIndex >= 0) {
+                                maNV = cursor.getString(maNVIndex);
+                                if (maNV != null && !maNV.isEmpty()) {
+                                    hoTen = dbHelper.getEmployeeNameByMa(maNV);
+                                }
+                            }
+                        }
+                        
+                        int ngayIndex = cursor.getColumnIndex("NgayChamCong");
+                        int gioVaoIndex = cursor.getColumnIndex("GioVao");
+                        int gioRaIndex = cursor.getColumnIndex("GioRa");
+                        int soGioIndex = cursor.getColumnIndex("SoGioLam");
+                        int trangThaiIndex = cursor.getColumnIndex("TrangThai");
+                        
+                        if (ngayIndex >= 0 && gioVaoIndex >= 0 && gioRaIndex >= 0 && 
+                            soGioIndex >= 0 && trangThaiIndex >= 0) {
+                            
+                            String ngay = cursor.getString(ngayIndex);
+                            String gioVao = cursor.getString(gioVaoIndex);
+                            String gioRa = cursor.getString(gioRaIndex);
+                            double soGio = cursor.getDouble(soGioIndex);
+                            String trangThai = cursor.getString(trangThaiIndex);
 
-                    ChamCong chamCong = new ChamCong(ngay, gioVao, gioRa, soGio, trangThai);
-                    if (maNV != null) {
-                        chamCong.setMaNhanVien(maNV);
-                        chamCong.setHoTen(hoTen);
+                            ChamCong chamCong = new ChamCong(ngay, gioVao, gioRa, soGio, trangThai);
+                            if (maNV != null) {
+                                chamCong.setMaNhanVien(maNV);
+                                chamCong.setHoTen(hoTen);
+                            }
+                            
+                            listChamCong.add(chamCong);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        // Tiếp tục với record tiếp theo
                     }
-                    
-                    listChamCong.add(chamCong);
                 } while (cursor.moveToNext());
                 cursor.close();
             }
 
-            adapter = new ChamCongAdapter(this, listChamCong, currentRole);
-            lvLichSuChamCong.setAdapter(adapter);
+            if (adapter == null) {
+                adapter = new ChamCongAdapter(this, listChamCong, currentRole);
+                lvLichSuChamCong.setAdapter(adapter);
+            } else {
+                adapter.updateData(listChamCong);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(this, "Lỗi khi tải lịch sử chấm công", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Lỗi khi tải lịch sử chấm công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
     
