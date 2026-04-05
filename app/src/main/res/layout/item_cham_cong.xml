@@ -4,116 +4,125 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="12dp"
-    android:background="@android:color/white">
+    android:background="@android:color/white"
+    android:layout_marginBottom="8dp"
+    android:elevation="1dp">
 
-    <LinearLayout
+    <!-- Thông tin nhân viên (chỉ hiện với Admin/HR/Manager) -->
+    <TextView
+        android:id="@+id/tv_ma_nv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="8dp">
+        android:text="Mã NV: NV001"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#333"
+        android:layout_marginBottom="4dp"
+        android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/tv_ngay_cham_cong"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="01/04/2024"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="#333" />
+    <TextView
+        android:id="@+id/tv_ho_ten"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Họ tên: Nguyễn Văn A"
+        android:textSize="14sp"
+        android:textColor="#666"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/tv_trang_thai"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Có mặt"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:background="#E8F5E8"
-            android:padding="4dp"
-            android:textColor="#4CAF50" />
-
-    </LinearLayout>
+    <!-- Thông tin chấm công -->
+    <TextView
+        android:id="@+id/tv_ngay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ngày: 2024-01-15"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#333"
+        android:layout_marginBottom="4dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/tv_gio_vao"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:text="Giờ vào: 08:00"
+            android:textSize="14sp"
+            android:textColor="#666" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Giờ vào"
-                android:textSize="12sp"
-                android:textColor="#666" />
-
-            <TextView
-                android:id="@+id/tv_gio_vao"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="08:00"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#2196F3" />
-
-        </LinearLayout>
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/tv_gio_ra"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:text="Giờ ra: 17:00"
+            android:textSize="14sp"
+            android:textColor="#666" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Giờ ra"
-                android:textSize="12sp"
-                android:textColor="#666" />
+    </LinearLayout>
 
-            <TextView
-                android:id="@+id/tv_gio_ra"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="17:30"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#FF5722" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="4dp">
 
-        </LinearLayout>
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/tv_so_gio"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:text="Số giờ: 8.0"
+            android:textSize="14sp"
+            android:textColor="#666" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Số giờ"
-                android:textSize="12sp"
-                android:textColor="#666" />
+        <TextView
+            android:id="@+id/tv_trang_thai"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Trạng thái: Có mặt"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:gravity="end" />
 
-            <TextView
-                android:id="@+id/tv_so_gio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="8.5h"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#4CAF50" />
+    </LinearLayout>
 
-        </LinearLayout>
+    <!-- Buttons sửa/xóa (chỉ hiện với Admin/HR/Manager) -->
+    <LinearLayout
+        android:id="@+id/layout_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:layout_marginTop="8dp"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/btn_xoa"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:text="XÓA"
+            android:textSize="12sp"
+            android:textColor="@android:color/holo_red_dark"
+            android:background="@drawable/btn_secondary"
+            android:layout_marginEnd="8dp"
+            android:minWidth="60dp" />
+
+        <Button
+            android:id="@+id/btn_sua"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:text="SỬA"
+            android:textSize="12sp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/btn_primary"
+            android:minWidth="60dp" />
 
     </LinearLayout>
 

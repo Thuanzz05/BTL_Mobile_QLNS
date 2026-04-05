@@ -6,6 +6,8 @@ public class ChamCong {
     private String gioRa;
     private double soGioLam;
     private String trangThai;
+    private String maNhanVien;
+    private String hoTen;
 
     public ChamCong(String ngayChamCong, String gioVao, String gioRa, double soGioLam, String trangThai) {
         this.ngayChamCong = ngayChamCong;
@@ -21,6 +23,8 @@ public class ChamCong {
     public String getGioRa() { return gioRa; }
     public double getSoGioLam() { return soGioLam; }
     public String getTrangThai() { return trangThai; }
+    public String getMaNhanVien() { return maNhanVien; }
+    public String getHoTen() { return hoTen; }
 
     // Setters
     public void setNgayChamCong(String ngayChamCong) { this.ngayChamCong = ngayChamCong; }
@@ -28,4 +32,6 @@ public class ChamCong {
     public void setGioRa(String gioRa) { this.gioRa = gioRa; }
     public void setSoGioLam(double soGioLam) { this.soGioLam = soGioLam; }
     public void setTrangThai(String trangThai) { this.trangThai = trangThai; }
+    public void setMaNhanVien(String maNhanVien) { this.maNhanVien = maNhanVien; }
+    public void setHoTen(String hoTen) { this.hoTen = hoTen; }
 }

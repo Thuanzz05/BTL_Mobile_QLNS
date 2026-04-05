@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
     
     private static final String DATABASE_NAME = "qlns.db";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
     
     public static final String TABLE_CHUC_VU = "ChucVu";
     public static final String TABLE_PHONG_BAN = "PhongBan";
@@ -69,14 +69,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL("ALTER TABLE " + TABLE_NHAN_VIEN + " ADD COLUMN HinhAnh TEXT");
         }
         if (oldVersion < 5) {
-            // Xóa hoàn toàn dữ liệu cũ và tạo lại với cấu trúc mới
             db.execSQL("DELETE FROM " + TABLE_TAI_KHOAN);
             db.execSQL("DELETE FROM " + TABLE_NHAN_VIEN);
             db.execSQL("DELETE FROM " + TABLE_PHONG_BAN);
             db.execSQL("DELETE FROM " + TABLE_CHUC_VU);
-            
-            // Tạo lại dữ liệu mẫu với admin riêng, không có NV001
             insertSampleData(db);
+        }
+        if (oldVersion < 6) {
+            // Xóa dữ liệu chấm công mẫu
+            db.execSQL("DELETE FROM " + TABLE_CHAM_CONG);
         }
     }
     
@@ -162,16 +163,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         nv4.put("TrangThaiLamViec", "Đang làm việc");
         db.insert(TABLE_NHAN_VIEN, null, nv4);
         
-        // Thêm tài khoản ADMIN riêng (không liên kết với nhân viên)
+        // Thêm tài khoản ADMIN riêng
         ContentValues tkAdmin = new ContentValues();
-        tkAdmin.put("MaNhanVien", "ADMIN"); // Mã đặc biệt cho admin
+        tkAdmin.put("MaNhanVien", "ADMIN");
         tkAdmin.put("TenDangNhap", "admin");
         tkAdmin.put("MatKhau", "123456");
         tkAdmin.put("VaiTro", "Admin");
         tkAdmin.put("TrangThai", 1);
         db.insert(TABLE_TAI_KHOAN, null, tkAdmin);
         
-        // Thêm tài khoản cho nhân viên (bắt đầu từ NV002)
+        // Thêm tài khoản cho nhân viên
         ContentValues tk2 = new ContentValues();
         tk2.put("MaNhanVien", "NV002");
         tk2.put("TenDangNhap", "hr");
@@ -195,6 +196,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         tk4.put("VaiTro", "Employee");
         tk4.put("TrangThai", 1);
         db.insert(TABLE_TAI_KHOAN, null, tk4);
+        
+        // Không thêm dữ liệu chấm công mẫu nữa - để trống
     }
 
     public boolean addEmployee(String maNV, String hoTen, String ngaySinh, String gioiTinh, 
@@ -252,7 +255,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "WHERE tk.TenDangNhap = ?";
         return db.rawQuery(query, new String[]{username});
     }
-
     public boolean checkEmployeeExists(String maNhanVien) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NHAN_VIEN + " WHERE MaNhanVien = ?", new String[]{maNhanVien});
@@ -275,7 +277,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
         try {
-            // Insert into NhanVien
             ContentValues nvValues = new ContentValues();
             nvValues.put("MaNhanVien", maNV);
             nvValues.put("HoTen", hoTen);
@@ -291,7 +292,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             long nvResult = db.insert(TABLE_NHAN_VIEN, null, nvValues);
             if (nvResult == -1) return false;
 
-            // Insert into TaiKhoan
             ContentValues tkValues = new ContentValues();
             tkValues.put("MaNhanVien", maNV);
             tkValues.put("TenDangNhap", username);
@@ -310,7 +310,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.endTransaction();
         }
     }
-
     public Cursor getAllEmployees() {
         String query = "SELECT nv.*, cv.TenChucVu, pb.TenPhongBan FROM " + TABLE_NHAN_VIEN + " nv " +
                       "LEFT JOIN " + TABLE_CHUC_VU + " cv ON nv.MaChucVu = cv.MaChucVu " +
@@ -341,7 +340,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if (cursor.moveToFirst()) lastCode = cursor.getString(0).trim();
             cursor.close();
         }
-        if (lastCode == null) return "NV002"; // Bắt đầu từ NV002 thay vì NV001
+        if (lastCode == null) return "NV002";
         java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("^([a-zA-Z]+)(\\d+)$").matcher(lastCode);
         if (matcher.find()) {
             String prefix = matcher.group(1);
@@ -368,7 +367,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Cursor getAllPositions() {
         return getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_CHUC_VU + " WHERE TrangThai = 1", null);
     }
-
     // Methods cho chấm công
     public String getMaNhanVienByUsername(String username) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -407,7 +405,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean chamCongVao(String maNhanVien, String date, String time) {
         SQLiteDatabase db = this.getWritableDatabase();
         
-        // Kiểm tra xem đã có record cho ngày hôm nay chưa
         String checkQuery = "SELECT MaChamCong FROM " + TABLE_CHAM_CONG + 
                            " WHERE MaNhanVien = ? AND NgayChamCong = ?";
         Cursor cursor = db.rawQuery(checkQuery, new String[]{maNhanVien, date});
@@ -416,7 +413,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         
         if (exists) {
-            // Update existing record
             ContentValues values = new ContentValues();
             values.put("GioVao", time);
             values.put("TrangThai", "Có mặt");
@@ -426,7 +422,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                  new String[]{maNhanVien, date});
             return result > 0;
         } else {
-            // Insert new record
             ContentValues values = new ContentValues();
             values.put("MaNhanVien", maNhanVien);
             values.put("NgayChamCong", date);
@@ -438,11 +433,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return result != -1;
         }
     }
-
     public boolean chamCongRa(String maNhanVien, String date, String time) {
         SQLiteDatabase db = this.getWritableDatabase();
         
-        // Tính số giờ làm việc
         String query = "SELECT GioVao FROM " + TABLE_CHAM_CONG + 
                       " WHERE MaNhanVien = ? AND NgayChamCong = ?";
         Cursor cursor = db.rawQuery(query, new String[]{maNhanVien, date});
@@ -475,7 +468,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int gioRaMinutes = Integer.parseInt(ra[0]) * 60 + Integer.parseInt(ra[1]);
             
             int diffMinutes = gioRaMinutes - gioVaoMinutes;
-            return diffMinutes / 60.0; // Chuyển về giờ
+            return diffMinutes / 60.0;
         } catch (Exception e) {
             return 0;
         }
@@ -483,35 +476,84 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public Cursor getAttendanceHistory(String maNhanVien, int limit) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT NgayChamCong, GioVao, GioRa, SoGioLam, TrangThai FROM " + TABLE_CHAM_CONG + 
-                      " WHERE MaNhanVien = ? ORDER BY NgayChamCong DESC LIMIT ?";
-        return db.rawQuery(query, new String[]{maNhanVien, String.valueOf(limit)});
+        try {
+            String query = "SELECT * FROM " + TABLE_CHAM_CONG + 
+                          " WHERE MaNhanVien = ? ORDER BY NgayChamCong DESC LIMIT ?";
+            return db.rawQuery(query, new String[]{maNhanVien, String.valueOf(limit)});
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    // Methods cho thông tin cá nhân
-    public Cursor getEmployeeByMa(String maNhanVien) {
+    public Cursor getAllAttendanceHistory(int limit) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM " + TABLE_NHAN_VIEN + " WHERE MaNhanVien = ?";
-        return db.rawQuery(query, new String[]{maNhanVien});
+        try {
+            String query = "SELECT * FROM " + TABLE_CHAM_CONG + " ORDER BY NgayChamCong DESC, MaNhanVien ASC LIMIT ?";
+            return db.rawQuery(query, new String[]{String.valueOf(limit)});
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    public boolean updateEmployeePersonalInfo(String maNhanVien, String hoTen, String ngaySinh, 
-                                            String gioiTinh, String soDienThoai, String email) {
+    public String getEmployeeNameByMa(String maNhanVien) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT HoTen FROM " + TABLE_NHAN_VIEN + " WHERE MaNhanVien = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{maNhanVien});
+        String hoTen = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            hoTen = cursor.getString(0);
+            cursor.close();
+        }
+        return hoTen;
+    }
+
+    public boolean updateAttendance(String maNhanVien, String ngayChamCong, String gioVao, String gioRa) {
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("HoTen", hoTen);
-        values.put("NgaySinh", ngaySinh);
-        values.put("GioiTinh", gioiTinh);
-        values.put("SoDienThoai", soDienThoai);
-        values.put("Email", email);
-        
-        int result = db.update(TABLE_NHAN_VIEN, values, "MaNhanVien = ?", new String[]{maNhanVien});
-        return result > 0;
+        try {
+            ContentValues values = new ContentValues();
+            
+            if (gioVao != null && !gioVao.isEmpty()) {
+                values.put("GioVao", gioVao);
+            }
+            
+            if (gioRa != null && !gioRa.isEmpty()) {
+                values.put("GioRa", gioRa);
+                
+                // Tính lại số giờ làm nếu có cả giờ vào và giờ ra
+                if (gioVao != null && !gioVao.isEmpty()) {
+                    double soGioLam = tinhSoGioLam(gioVao, gioRa);
+                    values.put("SoGioLam", soGioLam);
+                }
+            }
+            
+            int result = db.update(TABLE_CHAM_CONG, values, 
+                                 "MaNhanVien = ? AND NgayChamCong = ?", 
+                                 new String[]{maNhanVien, ngayChamCong});
+            return result > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteAttendance(String maNhanVien, String ngayChamCong) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        try {
+            int result = db.delete(TABLE_CHAM_CONG, 
+                                 "MaNhanVien = ? AND NgayChamCong = ?", 
+                                 new String[]{maNhanVien, ngayChamCong});
+            return result > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     // Methods cho nghỉ phép
-    public boolean submitLeaveRequest(String maNhanVien, String ngayBatDau, String ngayKetThuc, 
-                                    int soNgayNghi, String lyDo) {
+    public boolean addLeaveRequest(String maNhanVien, String ngayBatDau, String ngayKetThuc, 
+                                  int soNgayNghi, String lyDo) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("MaNhanVien", maNhanVien);
@@ -525,38 +567,67 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    public Cursor getLeaveHistory(String maNhanVien) {
+    public boolean submitLeaveRequest(String maNhanVien, String ngayBatDau, String ngayKetThuc, 
+                                    int soNgayNghi, String lyDo) {
+        return addLeaveRequest(maNhanVien, ngayBatDau, ngayKetThuc, soNgayNghi, lyDo);
+    }
+
+    public Cursor getLeaveRequests(String maNhanVien) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_NGHI_PHEP + 
                       " WHERE MaNhanVien = ? ORDER BY NgayBatDau DESC";
         return db.rawQuery(query, new String[]{maNhanVien});
     }
 
+    public Cursor getLeaveHistory(String maNhanVien) {
+        return getLeaveRequests(maNhanVien);
+    }
+
     public Cursor getAllLeaveRequests() {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM " + TABLE_NGHI_PHEP + " ORDER BY NgayBatDau DESC";
+        String query = "SELECT np.*, nv.HoTen FROM " + TABLE_NGHI_PHEP + " np " +
+                      "LEFT JOIN " + TABLE_NHAN_VIEN + " nv ON np.MaNhanVien = nv.MaNhanVien " +
+                      "ORDER BY np.NgayBatDau DESC";
         return db.rawQuery(query, null);
     }
 
-    public boolean approveLeaveRequest(int maNghiPhep, String trangThai) {
+    public boolean updateLeaveRequestStatus(int maNghiPhep, String trangThai, String nguoiDuyet) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("TrangThai", trangThai);
+        values.put("NguoiDuyet", nguoiDuyet);
         
-        int result = db.update(TABLE_NGHI_PHEP, values, "MaNghiPhep = ?", 
-                             new String[]{String.valueOf(maNghiPhep)});
+        int result = db.update(TABLE_NGHI_PHEP, values, 
+                             "MaNghiPhep = ?", new String[]{String.valueOf(maNghiPhep)});
         return result > 0;
     }
 
-    public String getEmployeeNameByMa(String maNhanVien) {
+    public boolean approveLeaveRequest(int maNghiPhep, String trangThai) {
+        return updateLeaveRequestStatus(maNghiPhep, trangThai, "Admin");
+    }
+
+    // Methods cho thông tin cá nhân
+    public Cursor getEmployeeByMa(String maNhanVien) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT HoTen FROM " + TABLE_NHAN_VIEN + " WHERE MaNhanVien = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{maNhanVien});
-        String hoTen = null;
-        if (cursor != null && cursor.moveToFirst()) {
-            hoTen = cursor.getString(0);
-            cursor.close();
-        }
-        return hoTen;
+        String query = "SELECT nv.*, cv.TenChucVu, pb.TenPhongBan FROM " + TABLE_NHAN_VIEN + " nv " +
+                      "LEFT JOIN " + TABLE_CHUC_VU + " cv ON nv.MaChucVu = cv.MaChucVu " +
+                      "LEFT JOIN " + TABLE_PHONG_BAN + " pb ON nv.MaPhongBan = pb.MaPhongBan " +
+                      "WHERE nv.MaNhanVien = ?";
+        return db.rawQuery(query, new String[]{maNhanVien});
+    }
+
+    public boolean updateEmployeePersonalInfo(String maNhanVien, String hoTen, String ngaySinh, 
+                                            String gioiTinh, String soDienThoai, String email) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("HoTen", hoTen);
+        values.put("NgaySinh", ngaySinh);
+        values.put("GioiTinh", gioiTinh);
+        values.put("SoDienThoai", soDienThoai);
+        values.put("Email", email);
+        
+        int result = db.update(TABLE_NHAN_VIEN, values, 
+                             "MaNhanVien = ?", new String[]{maNhanVien});
+        return result > 0;
     }
 }

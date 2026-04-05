@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
     android:background="#f5f5f5">
 
     <!-- Header -->
@@ -12,7 +11,9 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:layout_marginBottom="20dp">
+        android:padding="16dp"
+        android:background="@android:color/white"
+        android:elevation="2dp">
 
         <Button
             android:id="@+id/btn_back"
@@ -40,151 +41,146 @@
 
     </LinearLayout>
 
-    <ScrollView
+    <!-- Form xin nghỉ phép -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@android:color/white"
+        android:padding="16dp"
+        android:layout_margin="16dp"
+        android:elevation="2dp">
 
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:text="ĐĂNG KÝ NGHỈ PHÉP"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#333"
+            android:layout_marginBottom="16dp" />
 
-            <!-- Form xin nghỉ phép -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@android:color/white"
-                android:padding="16dp"
-                android:layout_marginBottom="16dp"
-                android:elevation="2dp">
+        <!-- Ngày bắt đầu -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ngày bắt đầu"
+            android:textSize="14sp"
+            android:textColor="#666"
+            android:layout_marginBottom="4dp" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="ĐĂNG KÝ NGHỈ PHÉP"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#333"
-                    android:layout_marginBottom="16dp" />
+        <EditText
+            android:id="@+id/et_ngay_bat_dau"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/edit_text_background"
+            android:padding="12dp"
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp"
+            android:hint="Chọn ngày bắt đầu"
+            android:focusable="false"
+            android:clickable="true" />
 
-                <!-- Ngày bắt đầu -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Ngày bắt đầu"
-                    android:textSize="14sp"
-                    android:textColor="#666"
-                    android:layout_marginBottom="4dp" />
+        <!-- Ngày kết thúc -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ngày kết thúc"
+            android:textSize="14sp"
+            android:textColor="#666"
+            android:layout_marginBottom="4dp" />
 
-                <EditText
-                    android:id="@+id/et_ngay_bat_dau"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="@drawable/edit_text_background"
-                    android:padding="12dp"
-                    android:textSize="16sp"
-                    android:layout_marginBottom="16dp"
-                    android:hint="Chọn ngày bắt đầu"
-                    android:focusable="false"
-                    android:clickable="true" />
+        <EditText
+            android:id="@+id/et_ngay_ket_thuc"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/edit_text_background"
+            android:padding="12dp"
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp"
+            android:hint="Chọn ngày kết thúc"
+            android:focusable="false"
+            android:clickable="true" />
 
-                <!-- Ngày kết thúc -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Ngày kết thúc"
-                    android:textSize="14sp"
-                    android:textColor="#666"
-                    android:layout_marginBottom="4dp" />
+        <!-- Số ngày nghỉ -->
+        <TextView
+            android:id="@+id/tv_so_ngay_nghi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Số ngày nghỉ: 0 ngày"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#666"
+            android:layout_marginBottom="16dp" />
 
-                <EditText
-                    android:id="@+id/et_ngay_ket_thuc"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="@drawable/edit_text_background"
-                    android:padding="12dp"
-                    android:textSize="16sp"
-                    android:layout_marginBottom="16dp"
-                    android:hint="Chọn ngày kết thúc"
-                    android:focusable="false"
-                    android:clickable="true" />
+        <!-- Lý do -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lý do nghỉ phép"
+            android:textSize="14sp"
+            android:textColor="#666"
+            android:layout_marginBottom="4dp" />
 
-                <!-- Số ngày nghỉ -->
-                <TextView
-                    android:id="@+id/tv_so_ngay_nghi"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Số ngày nghỉ: 0 ngày"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#666"
-                    android:layout_marginBottom="16dp" />
+        <EditText
+            android:id="@+id/et_ly_do"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@drawable/edit_text_background"
+            android:padding="12dp"
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp"
+            android:hint="Nhập lý do nghỉ phép"
+            android:gravity="top"
+            android:inputType="textMultiLine"
+            android:maxLines="3" />
 
-                <!-- Lý do -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Lý do nghỉ phép"
-                    android:textSize="14sp"
-                    android:textColor="#666"
-                    android:layout_marginBottom="4dp" />
+        <!-- Button gửi đơn -->
+        <Button
+            android:id="@+id/btn_xin_nghi_phep"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="GỬI ĐƠN XIN NGHỈ PHÉP"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:background="@drawable/btn_primary" />
 
-                <EditText
-                    android:id="@+id/et_ly_do"
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:background="@drawable/edit_text_background"
-                    android:padding="12dp"
-                    android:textSize="16sp"
-                    android:layout_marginBottom="16dp"
-                    android:hint="Nhập lý do nghỉ phép"
-                    android:gravity="top"
-                    android:inputType="textMultiLine"
-                    android:maxLines="4" />
+    </LinearLayout>
 
-                <!-- Button gửi đơn -->
-                <Button
-                    android:id="@+id/btn_xin_nghi_phep"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:text="GỬI ĐơN XIN NGHỈ PHÉP"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:background="@drawable/btn_primary" />
+    <!-- Lịch sử nghỉ phép header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@android:color/white"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:padding="16dp"
+        android:elevation="2dp">
 
-            </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="LỊCH SỬ NGHỈ PHÉP"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#333" />
 
-            <!-- Lịch sử nghỉ phép -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@android:color/white"
-                android:padding="16dp"
-                android:elevation="2dp">
+    </LinearLayout>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="LỊCH SỬ NGHỈ PHÉP"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#333"
-                    android:layout_marginBottom="16dp" />
-
-                <ListView
-                    android:id="@+id/lv_lich_su_nghi_phep"
-                    android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    android:divider="#E0E0E0"
-                    android:dividerHeight="1dp" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </ScrollView>
+    <!-- ListView có thể scroll -->
+    <ListView
+        android:id="@+id/lv_lich_su_nghi_phep"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@android:color/white"
+        android:divider="#E0E0E0"
+        android:dividerHeight="1dp"
+        android:elevation="2dp" />
 
 </LinearLayout>
