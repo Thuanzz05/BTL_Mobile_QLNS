@@ -2,10 +2,13 @@ package com.example.btl_mobile_qlns;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ArrayAdapter;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,16 +23,21 @@ import java.util.Locale;
 
 public class ChamCongActivity extends AppCompatActivity {
 
-    private TextView tvCurrentTime, tvCurrentDate, tvStatus;
+    private TextView tvCurrentTime, tvCurrentDate, tvStatus, tvTitle;
     private Button btnChamCongVao, btnChamCongRa;
     private ListView lvLichSuChamCong;
+    private Spinner spNhanVien;
+    private View layoutChamCongCaNhan, layoutQuanLyChamCong;
     
     private DatabaseHelper dbHelper;
     private String currentUsername;
     private String maNhanVien;
+    private String currentRole;
     private SimpleDateFormat timeFormat, dateFormat;
     private ChamCongAdapter adapter;
     private List<ChamCong> listChamCong;
+    private List<String> listMaNhanVien;
+    private List<String> listTenNhanVien;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +47,7 @@ public class ChamCongActivity extends AppCompatActivity {
         initViews();
         setupDatabase();
         setupFormats();
+        setupUI();
         updateCurrentTime();
         loadTodayStatus();
         loadAttendanceHistory();
@@ -46,17 +55,23 @@ public class ChamCongActivity extends AppCompatActivity {
     }
     
     private void initViews() {
+        tvTitle = findViewById(R.id.tv_title);
         tvCurrentTime = findViewById(R.id.tv_current_time);
         tvCurrentDate = findViewById(R.id.tv_current_date);
         tvStatus = findViewById(R.id.tv_status);
         btnChamCongVao = findViewById(R.id.btn_cham_cong_vao);
         btnChamCongRa = findViewById(R.id.btn_cham_cong_ra);
         lvLichSuChamCong = findViewById(R.id.lv_lich_su_cham_cong);
+        spNhanVien = findViewById(R.id.sp_nhan_vien);
+        layoutChamCongCaNhan = findViewById(R.id.layout_cham_cong_ca_nhan);
+        layoutQuanLyChamCong = findViewById(R.id.layout_quan_ly_cham_cong);
     }
     
     private void setupDatabase() {
         dbHelper = new DatabaseHelper(this);
         currentUsername = getIntent().getStringExtra("username");
+        currentRole = getIntent().getStringExtra("role");
+        
         if (currentUsername != null) {
             maNhanVien = dbHelper.getMaNhanVienByUsername(currentUsername);
         }
@@ -65,6 +80,57 @@ public class ChamCongActivity extends AppCompatActivity {
     private void setupFormats() {
         timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    }
+    
+    private void setupUI() {
+        // Tất cả role đều có thể chấm công cá nhân
+        tvTitle.setText("CHẤM CÔNG");
+        layoutChamCongCaNhan.setVisibility(View.VISIBLE);
+        
+        // Admin/HR/Manager có thêm chức năng quản lý
+        if (!"Employee".equals(currentRole)) {
+            layoutQuanLyChamCong.setVisibility(View.VISIBLE);
+            setupEmployeeSpinner();
+        } else {
+            layoutQuanLyChamCong.setVisibility(View.GONE);
+        }
+    }
+    
+    private void setupEmployeeSpinner() {
+        listMaNhanVien = new ArrayList<>();
+        listTenNhanVien = new ArrayList<>();
+        
+        // Thêm option "Tất cả nhân viên"
+        listMaNhanVien.add("ALL");
+        listTenNhanVien.add("Tất cả nhân viên");
+        
+        Cursor cursor = dbHelper.getAllEmployees();
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                String maNV = cursor.getString(cursor.getColumnIndexOrThrow("MaNhanVien"));
+                String hoTen = cursor.getString(cursor.getColumnIndexOrThrow("HoTen"));
+                
+                listMaNhanVien.add(maNV);
+                listTenNhanVien.add(maNV + " - " + hoTen);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, 
+            android.R.layout.simple_spinner_item, listTenNhanVien);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spNhanVien.setAdapter(adapter);
+        
+        // Listener để load dữ liệu khi chọn nhân viên
+        spNhanVien.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                loadAttendanceHistory();
+            }
+            
+            @Override
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+        });
     }
     
     private void updateCurrentTime() {
@@ -77,7 +143,7 @@ public class ChamCongActivity extends AppCompatActivity {
     }
     
     private void loadTodayStatus() {
-        if (maNhanVien == null) return;
+        if (maNhanVien == null || !"Employee".equals(currentRole)) return;
         
         String today = dateFormat.format(new Date());
         boolean[] status = dbHelper.getTodayAttendanceStatus(maNhanVien, today);
@@ -100,26 +166,55 @@ public class ChamCongActivity extends AppCompatActivity {
         }
     }
 
-    private void loadAttendanceHistory() {
-        if (maNhanVien == null) return;
-
+    public void loadAttendanceHistory() {
         listChamCong = new ArrayList<>();
-        Cursor cursor = dbHelper.getAttendanceHistory(maNhanVien, 30); // Lấy 30 ngày gần nhất
+        Cursor cursor;
+        
+        if ("Employee".equals(currentRole)) {
+            // Employee: Chỉ xem lịch sử của mình
+            if (maNhanVien == null) return;
+            cursor = dbHelper.getAttendanceHistory(maNhanVien, 30);
+        } else {
+            // Admin/HR/Manager: Xem theo nhân viên được chọn
+            int selectedPosition = spNhanVien.getSelectedItemPosition();
+            if (selectedPosition == 0) {
+                // Tất cả nhân viên
+                cursor = dbHelper.getAllAttendanceHistory(30);
+            } else {
+                String selectedMaNV = listMaNhanVien.get(selectedPosition);
+                cursor = dbHelper.getAttendanceHistory(selectedMaNV, 30);
+            }
+        }
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
+                String maNV = null;
+                String hoTen = null;
+                
+                // Lấy thông tin nhân viên nếu không phải Employee
+                if (!"Employee".equals(currentRole)) {
+                    maNV = cursor.getString(cursor.getColumnIndexOrThrow("MaNhanVien"));
+                    hoTen = dbHelper.getEmployeeNameByMa(maNV);
+                }
+                
                 String ngay = cursor.getString(cursor.getColumnIndexOrThrow("NgayChamCong"));
                 String gioVao = cursor.getString(cursor.getColumnIndexOrThrow("GioVao"));
                 String gioRa = cursor.getString(cursor.getColumnIndexOrThrow("GioRa"));
                 double soGio = cursor.getDouble(cursor.getColumnIndexOrThrow("SoGioLam"));
                 String trangThai = cursor.getString(cursor.getColumnIndexOrThrow("TrangThai"));
 
-                listChamCong.add(new ChamCong(ngay, gioVao, gioRa, soGio, trangThai));
+                ChamCong chamCong = new ChamCong(ngay, gioVao, gioRa, soGio, trangThai);
+                if (maNV != null) {
+                    chamCong.setMaNhanVien(maNV);
+                    chamCong.setHoTen(hoTen);
+                }
+                
+                listChamCong.add(chamCong);
             } while (cursor.moveToNext());
             cursor.close();
         }
 
-        adapter = new ChamCongAdapter(this, listChamCong);
+        adapter = new ChamCongAdapter(this, listChamCong, currentRole);
         lvLichSuChamCong.setAdapter(adapter);
     }
     

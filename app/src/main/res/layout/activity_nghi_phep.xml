@@ -141,7 +141,7 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:text="GỬI ĐƠN XIN NGHỈ PHÉP"
-            android:textColor="white"
+            android:textColor="@color/white"
             android:textStyle="bold"
             android:background="@drawable/btn_primary" />
 

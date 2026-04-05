@@ -122,6 +122,7 @@ public class DashboardActivity extends AppCompatActivity {
         btnChamCong.setOnClickListener(v -> {
             Intent intent = new Intent(DashboardActivity.this, ChamCongActivity.class);
             intent.putExtra("username", currentUsername);
+            intent.putExtra("role", currentRole);
             startActivity(intent);
         });
         

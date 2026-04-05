@@ -559,4 +559,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return hoTen;
     }
+
+    public Cursor getAllAttendanceHistory(int limit) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_CHAM_CONG + " ORDER BY NgayChamCong DESC LIMIT ?";
+        return db.rawQuery(query, new String[]{String.valueOf(limit)});
+    }
+
+    public boolean updateAttendance(String maNhanVien, String ngayChamCong, String gioVao, String gioRa) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        
+        if (gioVao != null && !gioVao.isEmpty()) {
+            values.put("GioVao", gioVao);
+        }
+        if (gioRa != null && !gioRa.isEmpty()) {
+            values.put("GioRa", gioRa);
+        }
+        
+        // Tính lại số giờ làm nếu có cả giờ vào và ra
+        if (gioVao != null && !gioVao.isEmpty() && gioRa != null && !gioRa.isEmpty()) {
+            double soGioLam = tinhSoGioLam(gioVao, gioRa);
+            values.put("SoGioLam", soGioLam);
+        }
+        
+        int result = db.update(TABLE_CHAM_CONG, values, 
+                             "MaNhanVien = ? AND NgayChamCong = ?", 
+                             new String[]{maNhanVien, ngayChamCong});
+        return result > 0;
+    }
+
+    public boolean deleteAttendance(String maNhanVien, String ngayChamCong) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int result = db.delete(TABLE_CHAM_CONG, 
+                             "MaNhanVien = ? AND NgayChamCong = ?", 
+                             new String[]{maNhanVien, ngayChamCong});
+        return result > 0;
+    }
 }
