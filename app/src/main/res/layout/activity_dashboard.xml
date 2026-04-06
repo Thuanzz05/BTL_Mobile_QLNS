@@ -75,6 +75,28 @@
 
             </androidx.cardview.widget.CardView>
 
+            <!-- Quản lý phòng ban -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="#FF9800">
+
+                <Button
+                    android:id="@+id/btn_quan_ly_pb"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="QUẢN LÝ PHÒNG BAN"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:background="@android:color/transparent"
+                    android:gravity="center" />
+
+            </androidx.cardview.widget.CardView>
+
             <!-- Chấm công -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
