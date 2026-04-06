@@ -53,6 +53,14 @@
             android:name=".NghiPhepActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".QuanLyPhongBanActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ThemPhongBanActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

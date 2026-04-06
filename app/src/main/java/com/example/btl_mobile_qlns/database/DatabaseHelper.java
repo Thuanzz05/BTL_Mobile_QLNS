@@ -630,4 +630,102 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                              "MaNhanVien = ?", new String[]{maNhanVien});
         return result > 0;
     }
+
+    // Methods cho quản lý phòng ban
+    public Cursor getAllDepartmentsWithDetails() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT pb.*, " +
+                      "COALESCE(nv.HoTen, '') as TenTruongPhong, " +
+                      "COUNT(nv2.MaNhanVien) as SoNhanVien " +
+                      "FROM " + TABLE_PHONG_BAN + " pb " +
+                      "LEFT JOIN " + TABLE_NHAN_VIEN + " nv ON pb.TruongPhong = nv.MaNhanVien " +
+                      "LEFT JOIN " + TABLE_NHAN_VIEN + " nv2 ON pb.MaPhongBan = nv2.MaPhongBan AND nv2.TrangThaiLamViec = 'Đang làm việc' " +
+                      "WHERE pb.TrangThai = 1 " +
+                      "GROUP BY pb.MaPhongBan " +
+                      "ORDER BY pb.MaPhongBan";
+        return db.rawQuery(query, null);
+    }
+
+    public Cursor searchDepartments(String keyword) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT pb.*, " +
+                      "COALESCE(nv.HoTen, '') as TenTruongPhong, " +
+                      "COUNT(nv2.MaNhanVien) as SoNhanVien " +
+                      "FROM " + TABLE_PHONG_BAN + " pb " +
+                      "LEFT JOIN " + TABLE_NHAN_VIEN + " nv ON pb.TruongPhong = nv.MaNhanVien " +
+                      "LEFT JOIN " + TABLE_NHAN_VIEN + " nv2 ON pb.MaPhongBan = nv2.MaPhongBan AND nv2.TrangThaiLamViec = 'Đang làm việc' " +
+                      "WHERE pb.TrangThai = 1 AND (pb.TenPhongBan LIKE ? OR pb.MaPhongBan LIKE ? OR nv.HoTen LIKE ?) " +
+                      "GROUP BY pb.MaPhongBan " +
+                      "ORDER BY pb.MaPhongBan";
+        String wildcardKeyword = "%" + keyword + "%";
+        return db.rawQuery(query, new String[]{wildcardKeyword, wildcardKeyword, wildcardKeyword});
+    }
+
+    public String getNextDepartmentCode() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT MaPhongBan FROM " + TABLE_PHONG_BAN + 
+                      " WHERE MaPhongBan LIKE 'PB%' " +
+                      " ORDER BY length(MaPhongBan) DESC, MaPhongBan DESC LIMIT 1";
+        Cursor cursor = db.rawQuery(query, null);
+        String lastCode = null;
+        if (cursor != null) {
+            if (cursor.moveToFirst()) lastCode = cursor.getString(0).trim();
+            cursor.close();
+        }
+        if (lastCode == null) return "PB001";
+        java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("^([a-zA-Z]+)(\\d+)$").matcher(lastCode);
+        if (matcher.find()) {
+            String prefix = matcher.group(1);
+            String numberStr = matcher.group(2);
+            try {
+                int nextNumber = Integer.parseInt(numberStr) + 1;
+                return String.format("%s%0" + numberStr.length() + "d", prefix, nextNumber);
+            } catch (Exception e) { return "PB001"; }
+        }
+        return "PB001";
+    }
+
+    public Cursor getManagerCandidates() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT nv.*, cv.TenChucVu FROM " + TABLE_NHAN_VIEN + " nv " +
+                      "LEFT JOIN " + TABLE_CHUC_VU + " cv ON nv.MaChucVu = cv.MaChucVu " +
+                      "WHERE nv.TrangThaiLamViec = 'Đang làm việc' " +
+                      "AND (cv.TenChucVu LIKE '%Trưởng phòng%' OR cv.TenChucVu LIKE '%Giám đốc%') " +
+                      "ORDER BY nv.HoTen";
+        return db.rawQuery(query, null);
+    }
+
+    public boolean addDepartment(String maPhongBan, String tenPhongBan, String truongPhong, int trangThai) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("MaPhongBan", maPhongBan);
+        values.put("TenPhongBan", tenPhongBan);
+        values.put("TruongPhong", truongPhong);
+        values.put("TrangThai", trangThai);
+        
+        long result = db.insert(TABLE_PHONG_BAN, null, values);
+        return result != -1;
+    }
+
+    public boolean updateDepartment(String maPhongBan, String tenPhongBan, String truongPhong, int trangThai) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("TenPhongBan", tenPhongBan);
+        values.put("TruongPhong", truongPhong);
+        values.put("TrangThai", trangThai);
+        
+        int result = db.update(TABLE_PHONG_BAN, values, 
+                             "MaPhongBan = ?", new String[]{maPhongBan});
+        return result > 0;
+    }
+
+    public boolean deleteDepartment(String maPhongBan) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("TrangThai", 0); // Đánh dấu ngừng hoạt động thay vì xóa
+        
+        int result = db.update(TABLE_PHONG_BAN, values, 
+                             "MaPhongBan = ?", new String[]{maPhongBan});
+        return result > 0;
+    }
 }
