@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#f5f5f5">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@android:color/white"
+        android:padding="16dp"
+        android:elevation="2dp">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="QUẢN LÝ CHỨC VỤ"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#2196F3"
+            android:gravity="center"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Tìm kiếm -->
+        <EditText
+            android:id="@+id/et_tim_kiem"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/edit_text_background"
+            android:padding="12dp"
+            android:hint="Tìm kiếm chức vụ..."
+            android:textSize="16sp"
+            android:drawableStart="@android:drawable/ic_menu_search"
+            android:drawablePadding="8dp"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Thông tin tổng quan -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tv_tong_so"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Tổng số: 0 chức vụ"
+                android:textSize="16sp"
+                android:textColor="#666" />
+
+            <Button
+                android:id="@+id/btn_them_chuc_vu"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="THÊM CHỨC VỤ"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:background="@drawable/btn_primary"
+                android:minWidth="140dp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Danh sách chức vụ -->
+    <ListView
+        android:id="@+id/lv_chuc_vu"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_margin="16dp"
+        android:background="@android:color/white"
+        android:divider="#E0E0E0"
+        android:dividerHeight="1dp"
+        android:elevation="2dp" />
+
+</LinearLayout>

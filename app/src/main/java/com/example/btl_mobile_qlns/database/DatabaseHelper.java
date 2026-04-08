@@ -728,4 +728,88 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                              "MaPhongBan = ?", new String[]{maPhongBan});
         return result > 0;
     }
+
+    // Methods cho quản lý chức vụ
+    public Cursor getAllPositionsWithDetails() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT cv.*, " +
+                      "COUNT(nv.MaNhanVien) as SoNhanVien " +
+                      "FROM " + TABLE_CHUC_VU + " cv " +
+                      "LEFT JOIN " + TABLE_NHAN_VIEN + " nv ON cv.MaChucVu = nv.MaChucVu AND nv.TrangThaiLamViec = 'Đang làm việc' " +
+                      "WHERE cv.TrangThai = 1 " +
+                      "GROUP BY cv.MaChucVu " +
+                      "ORDER BY cv.MaChucVu";
+        return db.rawQuery(query, null);
+    }
+
+    public Cursor searchPositions(String keyword) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT cv.*, " +
+                      "COUNT(nv.MaNhanVien) as SoNhanVien " +
+                      "FROM " + TABLE_CHUC_VU + " cv " +
+                      "LEFT JOIN " + TABLE_NHAN_VIEN + " nv ON cv.MaChucVu = nv.MaChucVu AND nv.TrangThaiLamViec = 'Đang làm việc' " +
+                      "WHERE cv.TrangThai = 1 AND (cv.TenChucVu LIKE ? OR cv.MaChucVu LIKE ?) " +
+                      "GROUP BY cv.MaChucVu " +
+                      "ORDER BY cv.MaChucVu";
+        String wildcardKeyword = "%" + keyword + "%";
+        return db.rawQuery(query, new String[]{wildcardKeyword, wildcardKeyword});
+    }
+
+    public String getNextPositionCode() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT MaChucVu FROM " + TABLE_CHUC_VU + 
+                      " WHERE MaChucVu LIKE 'CV%' " +
+                      " ORDER BY length(MaChucVu) DESC, MaChucVu DESC LIMIT 1";
+        Cursor cursor = db.rawQuery(query, null);
+        String lastCode = null;
+        if (cursor != null) {
+            if (cursor.moveToFirst()) lastCode = cursor.getString(0).trim();
+            cursor.close();
+        }
+        if (lastCode == null) return "CV001";
+        java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("^([a-zA-Z]+)(\\d+)$").matcher(lastCode);
+        if (matcher.find()) {
+            String prefix = matcher.group(1);
+            String numberStr = matcher.group(2);
+            try {
+                int nextNumber = Integer.parseInt(numberStr) + 1;
+                return String.format("%s%0" + numberStr.length() + "d", prefix, nextNumber);
+            } catch (Exception e) { return "CV001"; }
+        }
+        return "CV001";
+    }
+
+    public boolean addPosition(String maChucVu, String tenChucVu, double mucLuongCoBan, int trangThai) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("MaChucVu", maChucVu);
+        values.put("TenChucVu", tenChucVu);
+        values.put("MucLuongCoBan", mucLuongCoBan);
+        values.put("TrangThai", trangThai);
+        
+        long result = db.insert(TABLE_CHUC_VU, null, values);
+        return result != -1;
+    }
+
+    public boolean updatePosition(String maChucVu, String tenChucVu, double mucLuongCoBan, int trangThai) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("TenChucVu", tenChucVu);
+        values.put("MucLuongCoBan", mucLuongCoBan);
+        values.put("TrangThai", trangThai);
+        
+        int result = db.update(TABLE_CHUC_VU, values, 
+                             "MaChucVu = ?", new String[]{maChucVu});
+        return result > 0;
+    }
+
+    public boolean deletePosition(String maChucVu) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("TrangThai", 0); // Đánh dấu ngừng hoạt động thay vì xóa
+        
+        int result = db.update(TABLE_CHUC_VU, values, 
+                             "MaChucVu = ?", new String[]{maChucVu});
+        return result > 0;
+    }
 }
