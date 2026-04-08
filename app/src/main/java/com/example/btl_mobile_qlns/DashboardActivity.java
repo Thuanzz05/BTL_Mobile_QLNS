@@ -18,7 +18,7 @@ import com.example.btl_mobile_qlns.database.DatabaseHelper;
 public class DashboardActivity extends AppCompatActivity {
 
     private TextView tvWelcome;
-    private Button btnQuanLyNV, btnQuanLyPB, btnChamCong, btnNghiPhep, btnLuong, btnThongTin, btnDangXuat;
+    private Button btnQuanLyNV, btnQuanLyPB, btnQuanLyCV, btnChamCong, btnNghiPhep, btnLuong, btnThongTin, btnDangXuat;
     
     private DatabaseHelper dbHelper;
     private String currentUsername;
@@ -45,6 +45,7 @@ public class DashboardActivity extends AppCompatActivity {
         tvWelcome = findViewById(R.id.tv_welcome);
         btnQuanLyNV = findViewById(R.id.btn_quan_ly_nv);
         btnQuanLyPB = findViewById(R.id.btn_quan_ly_pb);
+        btnQuanLyCV = findViewById(R.id.btn_quan_ly_cv);
         btnChamCong = findViewById(R.id.btn_cham_cong);
         btnNghiPhep = findViewById(R.id.btn_nghi_phep);
         btnLuong = findViewById(R.id.btn_luong);
@@ -80,6 +81,7 @@ public class DashboardActivity extends AppCompatActivity {
         if ("Admin".equals(currentRole)) {
             btnQuanLyNV.setVisibility(android.view.View.VISIBLE);
             btnQuanLyPB.setVisibility(android.view.View.VISIBLE);
+            btnQuanLyCV.setVisibility(android.view.View.VISIBLE);
             btnChamCong.setVisibility(android.view.View.VISIBLE); // Admin có thể xem chấm công của tất cả
             btnNghiPhep.setVisibility(android.view.View.VISIBLE);
             btnLuong.setVisibility(android.view.View.VISIBLE);
@@ -89,6 +91,7 @@ public class DashboardActivity extends AppCompatActivity {
         else if ("HR".equals(currentRole)) {
             btnQuanLyNV.setVisibility(android.view.View.VISIBLE);
             btnQuanLyPB.setVisibility(android.view.View.VISIBLE);
+            btnQuanLyCV.setVisibility(android.view.View.VISIBLE);
             btnChamCong.setVisibility(android.view.View.VISIBLE);
             btnNghiPhep.setVisibility(android.view.View.VISIBLE);
             btnLuong.setVisibility(android.view.View.VISIBLE); // HR quản lý lương
@@ -98,6 +101,7 @@ public class DashboardActivity extends AppCompatActivity {
         else if ("Manager".equals(currentRole)) {
             btnQuanLyNV.setVisibility(android.view.View.VISIBLE);
             btnQuanLyPB.setVisibility(android.view.View.GONE); // Manager không quản lý phòng ban
+            btnQuanLyCV.setVisibility(android.view.View.GONE); // Manager không quản lý chức vụ
             btnChamCong.setVisibility(android.view.View.VISIBLE);
             btnNghiPhep.setVisibility(android.view.View.VISIBLE);
             btnLuong.setVisibility(android.view.View.GONE); // Manager không quản lý lương
@@ -107,6 +111,7 @@ public class DashboardActivity extends AppCompatActivity {
         else {
             btnQuanLyNV.setVisibility(android.view.View.GONE);
             btnQuanLyPB.setVisibility(android.view.View.GONE);
+            btnQuanLyCV.setVisibility(android.view.View.GONE);
             btnChamCong.setVisibility(android.view.View.VISIBLE);
             btnNghiPhep.setVisibility(android.view.View.VISIBLE);
             btnLuong.setVisibility(android.view.View.GONE);
@@ -127,6 +132,16 @@ public class DashboardActivity extends AppCompatActivity {
         btnQuanLyPB.setOnClickListener(v -> {
             if ("Admin".equals(currentRole) || "HR".equals(currentRole)) {
                 Intent intent = new Intent(DashboardActivity.this, QuanLyPhongBanActivity.class);
+                intent.putExtra("role", currentRole);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "Bạn không có quyền truy cập chức năng này", Toast.LENGTH_SHORT).show();
+            }
+        });
+        
+        btnQuanLyCV.setOnClickListener(v -> {
+            if ("Admin".equals(currentRole) || "HR".equals(currentRole)) {
+                Intent intent = new Intent(DashboardActivity.this, QuanLyChucVuActivity.class);
                 intent.putExtra("role", currentRole);
                 startActivity(intent);
             } else {
