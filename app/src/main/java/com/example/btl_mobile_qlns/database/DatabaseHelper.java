@@ -812,4 +812,112 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                              "MaChucVu = ?", new String[]{maChucVu});
         return result > 0;
     }
+
+    // Methods cho quản lý lương
+    public int calculateMonthlySalary(String thangNam) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int count = 0;
+        
+        try {
+            // Lấy danh sách nhân viên đang làm việc
+            String query = "SELECT nv.MaNhanVien, cv.MucLuongCoBan " +
+                          "FROM " + TABLE_NHAN_VIEN + " nv " +
+                          "LEFT JOIN " + TABLE_CHUC_VU + " cv ON nv.MaChucVu = cv.MaChucVu " +
+                          "WHERE nv.TrangThaiLamViec = 'Đang làm việc'";
+            Cursor cursor = db.rawQuery(query, null);
+            
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    String maNhanVien = cursor.getString(0);
+                    double luongCoBan = cursor.getDouble(1);
+                    
+                    // Tính tổng số giờ làm trong tháng
+                    double soGioLam = getTotalWorkingHours(maNhanVien, thangNam);
+                    
+                    // Phụ cấp mặc định (có thể tùy chỉnh)
+                    double phuCap = luongCoBan * 0.1; // 10% lương cơ bản
+                    
+                    // Tổng lương = lương cơ bản + phụ cấp
+                    double tongLuong = luongCoBan + phuCap;
+                    
+                    // Kiểm tra xem đã có bản ghi lương chưa
+                    String checkQuery = "SELECT MaLuong FROM " + TABLE_LUONG + 
+                                      " WHERE MaNhanVien = ? AND ThangNam = ?";
+                    Cursor checkCursor = db.rawQuery(checkQuery, new String[]{maNhanVien, thangNam});
+                    
+                    ContentValues values = new ContentValues();
+                    values.put("MaNhanVien", maNhanVien);
+                    values.put("ThangNam", thangNam);
+                    values.put("LuongCoBan", luongCoBan);
+                    values.put("PhuCap", phuCap);
+                    values.put("SoGioLam", soGioLam);
+                    values.put("TongLuong", tongLuong);
+                    values.put("TrangThai", "Chưa thanh toán");
+                    values.put("NgayTinhLuong", java.time.LocalDate.now().toString());
+                    
+                    if (checkCursor != null && checkCursor.moveToFirst()) {
+                        // Cập nhật nếu đã tồn tại
+                        int maLuong = checkCursor.getInt(0);
+                        db.update(TABLE_LUONG, values, "MaLuong = ?", new String[]{String.valueOf(maLuong)});
+                    } else {
+                        // Thêm mới nếu chưa tồn tại
+                        db.insert(TABLE_LUONG, null, values);
+                    }
+                    
+                    if (checkCursor != null) checkCursor.close();
+                    count++;
+                    
+                } while (cursor.moveToNext());
+                cursor.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return count;
+    }
+
+    private double getTotalWorkingHours(String maNhanVien, String thangNam) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        double totalHours = 0;
+        
+        try {
+            String query = "SELECT SUM(SoGioLam) FROM " + TABLE_CHAM_CONG + 
+                          " WHERE MaNhanVien = ? AND strftime('%Y-%m', NgayChamCong) = ?";
+            Cursor cursor = db.rawQuery(query, new String[]{maNhanVien, thangNam});
+            
+            if (cursor != null && cursor.moveToFirst()) {
+                totalHours = cursor.getDouble(0);
+                cursor.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return totalHours;
+    }
+
+    public Cursor getSalaryByMonth(String thangNam) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_LUONG + 
+                      " WHERE ThangNam = ? ORDER BY MaNhanVien";
+        return db.rawQuery(query, new String[]{thangNam});
+    }
+
+    public Cursor getSalaryByEmployee(String maNhanVien, String thangNam) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_LUONG + 
+                      " WHERE MaNhanVien = ? AND ThangNam = ?";
+        return db.rawQuery(query, new String[]{maNhanVien, thangNam});
+    }
+
+    public boolean updateSalaryStatus(int maLuong, String trangThai) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("TrangThai", trangThai);
+        
+        int result = db.update(TABLE_LUONG, values, 
+                             "MaLuong = ?", new String[]{String.valueOf(maLuong)});
+        return result > 0;
+    }
 }

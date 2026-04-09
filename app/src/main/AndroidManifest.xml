@@ -69,6 +69,10 @@
             android:name=".ThemChucVuActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".QuanLyLuongActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>
