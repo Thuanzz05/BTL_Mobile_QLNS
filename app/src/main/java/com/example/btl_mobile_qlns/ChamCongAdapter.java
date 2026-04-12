@@ -71,6 +71,7 @@ public class ChamCongAdapter extends BaseAdapter {
         TextView tvGioRa = convertView.findViewById(R.id.tv_gio_ra);
         TextView tvSoGio = convertView.findViewById(R.id.tv_so_gio);
         TextView tvTrangThai = convertView.findViewById(R.id.tv_trang_thai);
+        TextView tvGhiChu = convertView.findViewById(R.id.tv_ghi_chu);
         LinearLayout layoutButtons = convertView.findViewById(R.id.layout_buttons);
         Button btnSua = convertView.findViewById(R.id.btn_sua);
         Button btnXoa = convertView.findViewById(R.id.btn_xoa);
@@ -89,8 +90,26 @@ public class ChamCongAdapter extends BaseAdapter {
         tvNgay.setText("Ngày: " + chamCong.getNgayChamCong());
         tvGioVao.setText("Giờ vào: " + (chamCong.getGioVao() != null ? chamCong.getGioVao() : "Chưa chấm"));
         tvGioRa.setText("Giờ ra: " + (chamCong.getGioRa() != null ? chamCong.getGioRa() : "Chưa chấm"));
-        tvSoGio.setText("Số giờ: " + String.format("%.1f", chamCong.getSoGioLam()));
+        
+        // Tính giờ tăng ca
+        double soGioLam = chamCong.getSoGioLam();
+        double gioTangCa = dbHelper.tinhGioTangCa(soGioLam);
+        
+        if (gioTangCa > 0) {
+            tvSoGio.setText(String.format("Số giờ: %.1f (Tăng ca: %.1f)", soGioLam, gioTangCa));
+        } else {
+            tvSoGio.setText("Số giờ: " + String.format("%.1f", soGioLam));
+        }
+        
         tvTrangThai.setText("Trạng thái: " + chamCong.getTrangThai());
+        
+        // Hiển thị ghi chú nếu có
+        if (chamCong.getGhiChu() != null && !chamCong.getGhiChu().trim().isEmpty()) {
+            tvGhiChu.setText("Ghi chú: " + chamCong.getGhiChu());
+            tvGhiChu.setVisibility(View.VISIBLE);
+        } else {
+            tvGhiChu.setVisibility(View.GONE);
+        }
         
         // Thiết lập màu sắc cho trạng thái
         switch (chamCong.getTrangThai()) {
@@ -125,9 +144,11 @@ public class ChamCongAdapter extends BaseAdapter {
         
         EditText etGioVao = dialogView.findViewById(R.id.et_gio_vao);
         EditText etGioRa = dialogView.findViewById(R.id.et_gio_ra);
+        EditText etGhiChu = dialogView.findViewById(R.id.et_ghi_chu);
         
         etGioVao.setText(chamCong.getGioVao());
         etGioRa.setText(chamCong.getGioRa());
+        etGhiChu.setText(chamCong.getGhiChu() != null ? chamCong.getGhiChu() : "");
         
         // Time picker cho giờ vào
         etGioVao.setOnClickListener(v -> showTimePicker(etGioVao));
@@ -138,10 +159,11 @@ public class ChamCongAdapter extends BaseAdapter {
                .setPositiveButton("Lưu", (dialog, which) -> {
                    String gioVao = etGioVao.getText().toString().trim();
                    String gioRa = etGioRa.getText().toString().trim();
+                   String ghiChu = etGhiChu.getText().toString().trim();
                    
                    boolean success = dbHelper.updateAttendance(chamCong.getMaNhanVien(), 
                                                              chamCong.getNgayChamCong(), 
-                                                             gioVao, gioRa);
+                                                             gioVao, gioRa, ghiChu);
                    if (success) {
                        Toast.makeText(context, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
                        refreshData();

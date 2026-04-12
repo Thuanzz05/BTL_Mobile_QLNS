@@ -46,6 +46,29 @@
         android:textSize="16sp"
         android:hint="HH:mm:ss"
         android:focusable="false"
-        android:clickable="true" />
+        android:clickable="true"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Ghi chú -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ghi chú"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#333"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/et_ghi_chu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:background="@drawable/edit_text_background"
+        android:padding="12dp"
+        android:textSize="16sp"
+        android:hint="Nhập ghi chú (nếu có)"
+        android:inputType="text"
+        android:maxLines="3" />
 
 </LinearLayout>

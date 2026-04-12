@@ -93,6 +93,18 @@
 
     </LinearLayout>
 
+    <!-- Ghi chú -->
+    <TextView
+        android:id="@+id/tv_ghi_chu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ghi chú: Tăng ca"
+        android:textSize="13sp"
+        android:textColor="#FF9800"
+        android:textStyle="italic"
+        android:layout_marginTop="4dp"
+        android:visibility="gone" />
+
     <!-- Buttons sửa/xóa (chỉ hiện với Admin/HR/Manager) -->
     <LinearLayout
         android:id="@+id/layout_buttons"

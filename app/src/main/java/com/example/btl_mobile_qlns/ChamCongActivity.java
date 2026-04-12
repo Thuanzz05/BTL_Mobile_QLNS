@@ -236,6 +236,7 @@ public class ChamCongActivity extends AppCompatActivity {
                         int gioRaIndex = cursor.getColumnIndex("GioRa");
                         int soGioIndex = cursor.getColumnIndex("SoGioLam");
                         int trangThaiIndex = cursor.getColumnIndex("TrangThai");
+                        int ghiChuIndex = cursor.getColumnIndex("GhiChu");
                         
                         if (ngayIndex >= 0 && gioVaoIndex >= 0 && gioRaIndex >= 0 && 
                             soGioIndex >= 0 && trangThaiIndex >= 0) {
@@ -245,12 +246,14 @@ public class ChamCongActivity extends AppCompatActivity {
                             String gioRa = cursor.getString(gioRaIndex);
                             double soGio = cursor.getDouble(soGioIndex);
                             String trangThai = cursor.getString(trangThaiIndex);
+                            String ghiChu = ghiChuIndex >= 0 ? cursor.getString(ghiChuIndex) : "";
 
                             ChamCong chamCong = new ChamCong(ngay, gioVao, gioRa, soGio, trangThai);
                             if (maNV != null) {
                                 chamCong.setMaNhanVien(maNV);
                                 chamCong.setHoTen(hoTen);
                             }
+                            chamCong.setGhiChu(ghiChu);
                             
                             listChamCong.add(chamCong);
                         }
