@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
     
     private static final String DATABASE_NAME = "qlns.db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 8;
     
     public static final String TABLE_CHUC_VU = "ChucVu";
     public static final String TABLE_PHONG_BAN = "PhongBan";
@@ -55,7 +55,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(createNhanVienTable);
         
         db.execSQL("CREATE TABLE " + TABLE_HOP_DONG + " (MaHopDong TEXT PRIMARY KEY, MaNhanVien TEXT NOT NULL, LoaiHopDong TEXT NOT NULL, NgayBatDau DATE NOT NULL, NgayKetThuc DATE, MucLuong REAL NOT NULL, TrangThai TEXT DEFAULT 'Hiệu lực')");
-        db.execSQL("CREATE TABLE " + TABLE_CHAM_CONG + " (MaChamCong INTEGER PRIMARY KEY AUTOINCREMENT, MaNhanVien TEXT NOT NULL, NgayChamCong DATE NOT NULL, GioVao TIME, GioRa TIME, SoGioLam REAL DEFAULT 0, TrangThai TEXT DEFAULT 'Có mặt', UNIQUE (MaNhanVien, NgayChamCong))");
+        db.execSQL("CREATE TABLE " + TABLE_CHAM_CONG + " (MaChamCong INTEGER PRIMARY KEY AUTOINCREMENT, MaNhanVien TEXT NOT NULL, NgayChamCong DATE NOT NULL, GioVao TIME, GioRa TIME, SoGioLam REAL DEFAULT 0, TrangThai TEXT DEFAULT 'Có mặt', GhiChu TEXT, UNIQUE (MaNhanVien, NgayChamCong))");
         db.execSQL("CREATE TABLE " + TABLE_NGHI_PHEP + " (MaNghiPhep INTEGER PRIMARY KEY AUTOINCREMENT, MaNhanVien TEXT NOT NULL, NgayBatDau DATE NOT NULL, NgayKetThuc DATE NOT NULL, SoNgayNghi INTEGER NOT NULL, LyDo TEXT, TrangThai TEXT DEFAULT 'Chờ duyệt', NguoiDuyet TEXT)");
         db.execSQL("CREATE TABLE " + TABLE_LUONG + " (MaLuong INTEGER PRIMARY KEY AUTOINCREMENT, MaNhanVien TEXT NOT NULL, ThangNam TEXT NOT NULL, LuongCoBan REAL NOT NULL, PhuCap REAL DEFAULT 0, SoGioLam REAL DEFAULT 0, TongLuong REAL NOT NULL, TrangThai TEXT DEFAULT 'Chưa thanh toán', NgayTinhLuong DATE, UNIQUE (MaNhanVien, ThangNam))");
         db.execSQL("CREATE TABLE " + TABLE_TAI_KHOAN + " (MaTaiKhoan INTEGER PRIMARY KEY AUTOINCREMENT, MaNhanVien TEXT NOT NULL UNIQUE, TenDangNhap TEXT NOT NULL UNIQUE, MatKhau TEXT NOT NULL, VaiTro TEXT DEFAULT 'Employee', TrangThai INTEGER DEFAULT 1)");
@@ -75,9 +75,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL("DELETE FROM " + TABLE_CHUC_VU);
             insertSampleData(db);
         }
-        if (oldVersion < 6) {
-            // Xóa dữ liệu chấm công mẫu
+        if (oldVersion < 8) {
+            // Thêm cột GhiChu nếu chưa có
+            try {
+                db.execSQL("ALTER TABLE " + TABLE_CHAM_CONG + " ADD COLUMN GhiChu TEXT");
+            } catch (Exception e) {
+                // Cột đã tồn tại
+            }
+            // Xóa dữ liệu chấm công cũ và thêm dữ liệu mẫu mới
             db.execSQL("DELETE FROM " + TABLE_CHAM_CONG);
+            insertSampleAttendance(db);
         }
     }
     
@@ -197,7 +204,52 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         tk4.put("TrangThai", 1);
         db.insert(TABLE_TAI_KHOAN, null, tk4);
         
-        // Không thêm dữ liệu chấm công mẫu nữa - để trống
+        // Thêm dữ liệu chấm công mẫu
+        insertSampleAttendance(db);
+    }
+    
+    private void insertSampleAttendance(SQLiteDatabase db) {
+        // Lấy ngày hiện tại và các ngày trước đó
+        java.time.LocalDate today = java.time.LocalDate.now();
+        
+        // Thêm dữ liệu chấm công cho 7 ngày gần nhất
+        for (int i = 0; i < 7; i++) {
+            java.time.LocalDate date = today.minusDays(i);
+            String dateStr = date.toString();
+            
+            // Chấm công cho NV002 - làm đủ giờ
+            ContentValues cc1 = new ContentValues();
+            cc1.put("MaNhanVien", "NV002");
+            cc1.put("NgayChamCong", dateStr);
+            cc1.put("GioVao", "08:00:00");
+            cc1.put("GioRa", "17:00:00");
+            cc1.put("SoGioLam", 8.0);
+            cc1.put("TrangThai", "Có mặt");
+            cc1.put("GhiChu", "");
+            db.insert(TABLE_CHAM_CONG, null, cc1);
+            
+            // Chấm công cho NV003 - có tăng ca
+            ContentValues cc2 = new ContentValues();
+            cc2.put("MaNhanVien", "NV003");
+            cc2.put("NgayChamCong", dateStr);
+            cc2.put("GioVao", "08:15:00");
+            cc2.put("GioRa", "17:30:00");
+            cc2.put("SoGioLam", 8.25);
+            cc2.put("TrangThai", "Có mặt");
+            cc2.put("GhiChu", "Tăng ca");
+            db.insert(TABLE_CHAM_CONG, null, cc2);
+            
+            // Chấm công cho NV004 - thiếu giờ
+            ContentValues cc3 = new ContentValues();
+            cc3.put("MaNhanVien", "NV004");
+            cc3.put("NgayChamCong", dateStr);
+            cc3.put("GioVao", "08:30:00");
+            cc3.put("GioRa", "17:15:00");
+            cc3.put("SoGioLam", 7.75);
+            cc3.put("TrangThai", "Có mặt");
+            cc3.put("GhiChu", "Đi muộn");
+            db.insert(TABLE_CHAM_CONG, null, cc3);
+        }
     }
 
     public boolean addEmployee(String maNV, String hoTen, String ngaySinh, String gioiTinh, 
@@ -474,6 +526,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    // Tính giờ tăng ca (giờ làm > 8 giờ)
+    public double tinhGioTangCa(double soGioLam) {
+        if (soGioLam > 8.0) {
+            return soGioLam - 8.0;
+        }
+        return 0;
+    }
+
     public Cursor getAttendanceHistory(String maNhanVien, int limit) {
         SQLiteDatabase db = this.getReadableDatabase();
         try {
@@ -509,7 +569,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return hoTen;
     }
 
-    public boolean updateAttendance(String maNhanVien, String ngayChamCong, String gioVao, String gioRa) {
+    public boolean updateAttendance(String maNhanVien, String ngayChamCong, String gioVao, String gioRa, String ghiChu) {
         SQLiteDatabase db = this.getWritableDatabase();
         try {
             ContentValues values = new ContentValues();
@@ -528,6 +588,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 }
             }
             
+            // Cập nhật ghi chú
+            if (ghiChu != null) {
+                values.put("GhiChu", ghiChu);
+            }
+            
             int result = db.update(TABLE_CHAM_CONG, values, 
                                  "MaNhanVien = ? AND NgayChamCong = ?", 
                                  new String[]{maNhanVien, ngayChamCong});
@@ -536,6 +601,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             e.printStackTrace();
             return false;
         }
+    }
+    
+    // Phương thức cũ để tương thích (không có ghi chú)
+    public boolean updateAttendance(String maNhanVien, String ngayChamCong, String gioVao, String gioRa) {
+        return updateAttendance(maNhanVien, ngayChamCong, gioVao, gioRa, null);
     }
 
     public boolean deleteAttendance(String maNhanVien, String ngayChamCong) {
