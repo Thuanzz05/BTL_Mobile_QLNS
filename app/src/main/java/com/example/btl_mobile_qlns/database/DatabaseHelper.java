@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
     
     private static final String DATABASE_NAME = "qlns.db";
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 10;
     
     public static final String TABLE_CHUC_VU = "ChucVu";
     public static final String TABLE_PHONG_BAN = "PhongBan";
@@ -86,6 +86,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL("DELETE FROM " + TABLE_CHAM_CONG);
             insertSampleAttendance(db);
         }
+        if (oldVersion < 10) {
+            // Thêm nhiều dữ liệu mẫu hơn
+            db.execSQL("DELETE FROM " + TABLE_TAI_KHOAN);
+            db.execSQL("DELETE FROM " + TABLE_NHAN_VIEN);
+            db.execSQL("DELETE FROM " + TABLE_PHONG_BAN);
+            db.execSQL("DELETE FROM " + TABLE_CHUC_VU);
+            db.execSQL("DELETE FROM " + TABLE_HOP_DONG);
+            db.execSQL("DELETE FROM " + TABLE_CHAM_CONG);
+            db.execSQL("DELETE FROM " + TABLE_NGHI_PHEP);
+            db.execSQL("DELETE FROM " + TABLE_LUONG);
+            insertSampleData(db);
+        }
     }
     
     private void insertSampleData(SQLiteDatabase db) {
@@ -93,23 +105,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues cv1 = new ContentValues();
         cv1.put("MaChucVu", "CV001");
         cv1.put("TenChucVu", "Giám đốc");
-        cv1.put("MucLuongCoBan", 50000000);
+        cv1.put("MucLuongCoBan", 15000000);
         cv1.put("TrangThai", 1);
         db.insert(TABLE_CHUC_VU, null, cv1);
         
         ContentValues cv2 = new ContentValues();
         cv2.put("MaChucVu", "CV002");
         cv2.put("TenChucVu", "Trưởng phòng");
-        cv2.put("MucLuongCoBan", 25000000);
+        cv2.put("MucLuongCoBan", 8000000);
         cv2.put("TrangThai", 1);
         db.insert(TABLE_CHUC_VU, null, cv2);
         
         ContentValues cv3 = new ContentValues();
         cv3.put("MaChucVu", "CV003");
         cv3.put("TenChucVu", "Nhân viên");
-        cv3.put("MucLuongCoBan", 12000000);
+        cv3.put("MucLuongCoBan", 5000000);
         cv3.put("TrangThai", 1);
         db.insert(TABLE_CHUC_VU, null, cv3);
+        
+        ContentValues cv4 = new ContentValues();
+        cv4.put("MaChucVu", "CV004");
+        cv4.put("TenChucVu", "Phó phòng");
+        cv4.put("MucLuongCoBan", 6500000);
+        cv4.put("TrangThai", 1);
+        db.insert(TABLE_CHUC_VU, null, cv4);
+        
+        ContentValues cv5 = new ContentValues();
+        cv5.put("MaChucVu", "CV005");
+        cv5.put("TenChucVu", "Thực tập sinh");
+        cv5.put("MucLuongCoBan", 3000000);
+        cv5.put("TrangThai", 1);
+        db.insert(TABLE_CHUC_VU, null, cv5);
         
         // Thêm dữ liệu Phòng ban
         ContentValues pb1 = new ContentValues();
@@ -130,45 +156,55 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         pb3.put("TrangThai", 1);
         db.insert(TABLE_PHONG_BAN, null, pb3);
         
-        // Thêm dữ liệu Nhân viên (bắt đầu từ NV002)
-        ContentValues nv2 = new ContentValues();
-        nv2.put("MaNhanVien", "NV002");
-        nv2.put("HoTen", "Trần Thị Bình");
-        nv2.put("NgaySinh", "1990-08-22");
-        nv2.put("GioiTinh", "Nữ");
-        nv2.put("SoDienThoai", "0901234568");
-        nv2.put("Email", "binh@company.com");
-        nv2.put("NgayVaoLam", "2020-02-01");
-        nv2.put("MaPhongBan", "PB001");
-        nv2.put("MaChucVu", "CV002");
-        nv2.put("TrangThaiLamViec", "Đang làm việc");
-        db.insert(TABLE_NHAN_VIEN, null, nv2);
+        ContentValues pb4 = new ContentValues();
+        pb4.put("MaPhongBan", "PB004");
+        pb4.put("TenPhongBan", "Phòng Marketing");
+        pb4.put("TrangThai", 1);
+        db.insert(TABLE_PHONG_BAN, null, pb4);
         
-        ContentValues nv3 = new ContentValues();
-        nv3.put("MaNhanVien", "NV003");
-        nv3.put("HoTen", "Lê Văn Cường");
-        nv3.put("NgaySinh", "1988-12-10");
-        nv3.put("GioiTinh", "Nam");
-        nv3.put("SoDienThoai", "0901234569");
-        nv3.put("Email", "cuong@company.com");
-        nv3.put("NgayVaoLam", "2020-03-15");
-        nv3.put("MaPhongBan", "PB002");
-        nv3.put("MaChucVu", "CV002");
-        nv3.put("TrangThaiLamViec", "Đang làm việc");
-        db.insert(TABLE_NHAN_VIEN, null, nv3);
+        ContentValues pb5 = new ContentValues();
+        pb5.put("MaPhongBan", "PB005");
+        pb5.put("TenPhongBan", "Phòng Kinh doanh");
+        pb5.put("TrangThai", 1);
+        db.insert(TABLE_PHONG_BAN, null, pb5);
         
-        ContentValues nv4 = new ContentValues();
-        nv4.put("MaNhanVien", "NV004");
-        nv4.put("HoTen", "Phạm Thị Dung");
-        nv4.put("NgaySinh", "1992-03-25");
-        nv4.put("GioiTinh", "Nữ");
-        nv4.put("SoDienThoai", "0901234570");
-        nv4.put("Email", "dung@company.com");
-        nv4.put("NgayVaoLam", "2020-04-01");
-        nv4.put("MaPhongBan", "PB003");
-        nv4.put("MaChucVu", "CV003");
-        nv4.put("TrangThaiLamViec", "Đang làm việc");
-        db.insert(TABLE_NHAN_VIEN, null, nv4);
+        // Thêm dữ liệu Nhân viên (10 nhân viên)
+        String[][] employees = {
+            {"NV002", "Trần Thị Bình", "1990-08-22", "Nữ", "0901234568", "binh@company.com", "2020-02-01", "PB001", "CV002"},
+            {"NV003", "Lê Văn Cường", "1988-12-10", "Nam", "0901234569", "cuong@company.com", "2020-03-15", "PB002", "CV002"},
+            {"NV004", "Phạm Thị Dung", "1992-03-25", "Nữ", "0901234570", "dung@company.com", "2020-04-01", "PB003", "CV003"},
+            {"NV005", "Hoàng Văn Em", "1995-07-18", "Nam", "0901234571", "em@company.com", "2020-05-10", "PB003", "CV003"},
+            {"NV006", "Nguyễn Thị Hoa", "1993-11-05", "Nữ", "0901234572", "hoa@company.com", "2021-01-15", "PB004", "CV003"},
+            {"NV007", "Đặng Minh Khoa", "1987-09-30", "Nam", "0901234573", "khoa@company.com", "2021-02-20", "PB004", "CV004"},
+            {"NV008", "Vũ Thị Lan", "1994-06-12", "Nữ", "0901234574", "lan@company.com", "2021-03-10", "PB005", "CV003"},
+            {"NV009", "Bùi Văn Minh", "1991-04-08", "Nam", "0901234575", "minh@company.com", "2021-04-05", "PB005", "CV004"},
+            {"NV010", "Lý Thị Nga", "1996-12-20", "Nữ", "0901234576", "nga@company.com", "2022-01-10", "PB001", "CV003"},
+            {"NV011", "Trịnh Văn Phong", "1998-02-14", "Nam", "0901234577", "phong@company.com", "2023-06-01", "PB002", "CV005"}
+        };
+        
+        for (String[] emp : employees) {
+            ContentValues nv = new ContentValues();
+            nv.put("MaNhanVien", emp[0]);
+            nv.put("HoTen", emp[1]);
+            nv.put("NgaySinh", emp[2]);
+            nv.put("GioiTinh", emp[3]);
+            nv.put("SoDienThoai", emp[4]);
+            nv.put("Email", emp[5]);
+            nv.put("NgayVaoLam", emp[6]);
+            nv.put("MaPhongBan", emp[7]);
+            nv.put("MaChucVu", emp[8]);
+            nv.put("TrangThaiLamViec", "Đang làm việc");
+            db.insert(TABLE_NHAN_VIEN, null, nv);
+        }
+        
+        // Cập nhật Trưởng phòng
+        ContentValues updatePB1 = new ContentValues();
+        updatePB1.put("TruongPhong", "NV002");
+        db.update(TABLE_PHONG_BAN, updatePB1, "MaPhongBan = ?", new String[]{"PB001"});
+        
+        ContentValues updatePB2 = new ContentValues();
+        updatePB2.put("TruongPhong", "NV003");
+        db.update(TABLE_PHONG_BAN, updatePB2, "MaPhongBan = ?", new String[]{"PB002"});
         
         // Thêm tài khoản ADMIN riêng
         ContentValues tkAdmin = new ContentValues();
@@ -180,75 +216,146 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert(TABLE_TAI_KHOAN, null, tkAdmin);
         
         // Thêm tài khoản cho nhân viên
-        ContentValues tk2 = new ContentValues();
-        tk2.put("MaNhanVien", "NV002");
-        tk2.put("TenDangNhap", "hr");
-        tk2.put("MatKhau", "123456");
-        tk2.put("VaiTro", "HR");
-        tk2.put("TrangThai", 1);
-        db.insert(TABLE_TAI_KHOAN, null, tk2);
+        String[][] accounts = {
+            {"NV002", "hr", "123456", "HR"},
+            {"NV003", "manager1", "123456", "Manager"},
+            {"NV004", "user1", "123456", "Employee"},
+            {"NV005", "user2", "123456", "Employee"},
+            {"NV006", "user3", "123456", "Employee"},
+            {"NV007", "manager2", "123456", "Manager"},
+            {"NV008", "user4", "123456", "Employee"},
+            {"NV009", "manager3", "123456", "Manager"},
+            {"NV010", "user5", "123456", "Employee"},
+            {"NV011", "intern1", "123456", "Employee"}
+        };
         
-        ContentValues tk3 = new ContentValues();
-        tk3.put("MaNhanVien", "NV003");
-        tk3.put("TenDangNhap", "manager");
-        tk3.put("MatKhau", "123456");
-        tk3.put("VaiTro", "Manager");
-        tk3.put("TrangThai", 1);
-        db.insert(TABLE_TAI_KHOAN, null, tk3);
+        for (String[] acc : accounts) {
+            ContentValues tk = new ContentValues();
+            tk.put("MaNhanVien", acc[0]);
+            tk.put("TenDangNhap", acc[1]);
+            tk.put("MatKhau", acc[2]);
+            tk.put("VaiTro", acc[3]);
+            tk.put("TrangThai", 1);
+            db.insert(TABLE_TAI_KHOAN, null, tk);
+        }
         
-        ContentValues tk4 = new ContentValues();
-        tk4.put("MaNhanVien", "NV004");
-        tk4.put("TenDangNhap", "user");
-        tk4.put("MatKhau", "123456");
-        tk4.put("VaiTro", "Employee");
-        tk4.put("TrangThai", 1);
-        db.insert(TABLE_TAI_KHOAN, null, tk4);
+        // Thêm dữ liệu Hợp đồng lao động
+        String[][] contracts = {
+            {"HD001", "NV002", "Không thời hạn", "2020-02-01", null, "8000000"},
+            {"HD002", "NV003", "Không thời hạn", "2020-03-15", null, "8000000"},
+            {"HD003", "NV004", "Có thời hạn", "2020-04-01", "2025-03-31", "5000000"},
+            {"HD004", "NV005", "Có thời hạn", "2020-05-10", "2025-05-09", "5000000"},
+            {"HD005", "NV006", "Có thời hạn", "2021-01-15", "2026-01-14", "5000000"},
+            {"HD006", "NV007", "Không thời hạn", "2021-02-20", null, "6500000"},
+            {"HD007", "NV008", "Có thời hạn", "2021-03-10", "2026-03-09", "5000000"},
+            {"HD008", "NV009", "Không thời hạn", "2021-04-05", null, "6500000"},
+            {"HD009", "NV010", "Có thời hạn", "2022-01-10", "2027-01-09", "5000000"},
+            {"HD010", "NV011", "Có thời hạn", "2023-06-01", "2024-05-31", "3000000"}
+        };
+        
+        for (String[] contract : contracts) {
+            ContentValues hd = new ContentValues();
+            hd.put("MaHopDong", contract[0]);
+            hd.put("MaNhanVien", contract[1]);
+            hd.put("LoaiHopDong", contract[2]);
+            hd.put("NgayBatDau", contract[3]);
+            if (contract[4] != null) hd.put("NgayKetThuc", contract[4]);
+            hd.put("MucLuong", Double.parseDouble(contract[5]));
+            hd.put("TrangThai", "Hiệu lực");
+            db.insert(TABLE_HOP_DONG, null, hd);
+        }
+        
+        // Thêm dữ liệu nghỉ phép
+        insertSampleLeaveRequests(db);
         
         // Thêm dữ liệu chấm công mẫu
         insertSampleAttendance(db);
+    }
+    
+    private void insertSampleLeaveRequests(SQLiteDatabase db) {
+        java.time.LocalDate today = java.time.LocalDate.now();
+        
+        // Một số đơn nghỉ phép trong tháng hiện tại và tháng trước
+        String[][] leaveRequests = {
+            {"NV004", today.minusDays(15).toString(), today.minusDays(15).toString(), "1", "Khám bệnh định kỳ", "Đã duyệt", "NV002"},
+            {"NV005", today.minusDays(10).toString(), today.minusDays(8).toString(), "3", "Về quê thăm gia đình", "Đã duyệt", "NV003"},
+            {"NV006", today.minusDays(5).toString(), today.minusDays(5).toString(), "1", "Bị cảm cúm", "Đã duyệt", "NV002"},
+            {"NV008", today.minusDays(3).toString(), today.minusDays(2).toString(), "2", "Công việc cá nhân", "Chờ duyệt", null},
+            {"NV010", today.plusDays(5).toString(), today.plusDays(7).toString(), "3", "Nghỉ lễ gia đình", "Chờ duyệt", null},
+            {"NV011", today.minusDays(20).toString(), today.minusDays(20).toString(), "1", "Đi học", "Từ chối", "NV003"},
+            {"NV007", today.minusDays(12).toString(), today.minusDays(11).toString(), "2", "Nghỉ phép năm", "Đã duyệt", "NV002"}
+        };
+        
+        for (String[] leave : leaveRequests) {
+            ContentValues np = new ContentValues();
+            np.put("MaNhanVien", leave[0]);
+            np.put("NgayBatDau", leave[1]);
+            np.put("NgayKetThuc", leave[2]);
+            np.put("SoNgayNghi", Integer.parseInt(leave[3]));
+            np.put("LyDo", leave[4]);
+            np.put("TrangThai", leave[5]);
+            if (leave[6] != null) np.put("NguoiDuyet", leave[6]);
+            db.insert(TABLE_NGHI_PHEP, null, np);
+        }
     }
     
     private void insertSampleAttendance(SQLiteDatabase db) {
         // Lấy ngày hiện tại và các ngày trước đó
         java.time.LocalDate today = java.time.LocalDate.now();
         
-        // Thêm dữ liệu chấm công cho 7 ngày gần nhất
-        for (int i = 0; i < 7; i++) {
+        // Danh sách nhân viên và thời gian làm việc đa dạng
+        String[][] attendanceData = {
+            {"NV002", "08:00:00", "17:00:00", "8.0", "Có mặt", ""},
+            {"NV003", "08:15:00", "17:30:00", "8.25", "Có mặt", "Tăng ca"},
+            {"NV004", "08:30:00", "17:15:00", "7.75", "Có mặt", "Đi muộn"},
+            {"NV005", "08:00:00", "16:45:00", "7.75", "Có mặt", "Về sớm"},
+            {"NV006", "08:10:00", "17:20:00", "8.17", "Có mặt", ""},
+            {"NV007", "07:45:00", "18:00:00", "9.25", "Có mặt", "Tăng ca nhiều"},
+            {"NV008", "08:00:00", "17:00:00", "8.0", "Có mặt", ""},
+            {"NV009", "08:20:00", "17:40:00", "8.33", "Có mặt", "Tăng ca"},
+            {"NV010", "08:05:00", "17:05:00", "8.0", "Có mặt", ""},
+            {"NV011", "09:00:00", "17:30:00", "7.5", "Có mặt", "Đi muộn 1h"}
+        };
+        
+        // Thêm dữ liệu chấm công cho 10 ngày gần nhất
+        for (int i = 0; i < 10; i++) {
             java.time.LocalDate date = today.minusDays(i);
             String dateStr = date.toString();
             
-            // Chấm công cho NV002 - làm đủ giờ
-            ContentValues cc1 = new ContentValues();
-            cc1.put("MaNhanVien", "NV002");
-            cc1.put("NgayChamCong", dateStr);
-            cc1.put("GioVao", "08:00:00");
-            cc1.put("GioRa", "17:00:00");
-            cc1.put("SoGioLam", 8.0);
-            cc1.put("TrangThai", "Có mặt");
-            cc1.put("GhiChu", "");
-            db.insert(TABLE_CHAM_CONG, null, cc1);
+            // Bỏ qua cuối tuần (thứ 7, chủ nhật)
+            if (date.getDayOfWeek().getValue() == 6 || date.getDayOfWeek().getValue() == 7) {
+                continue;
+            }
             
-            // Chấm công cho NV003 - có tăng ca
-            ContentValues cc2 = new ContentValues();
-            cc2.put("MaNhanVien", "NV003");
-            cc2.put("NgayChamCong", dateStr);
-            cc2.put("GioVao", "08:15:00");
-            cc2.put("GioRa", "17:30:00");
-            cc2.put("SoGioLam", 8.25);
-            cc2.put("TrangThai", "Có mặt");
-            cc2.put("GhiChu", "Tăng ca");
-            db.insert(TABLE_CHAM_CONG, null, cc2);
-            
-            // Chấm công cho NV004 - thiếu giờ
-            ContentValues cc3 = new ContentValues();
-            cc3.put("MaNhanVien", "NV004");
-            cc3.put("NgayChamCong", dateStr);
-            cc3.put("GioVao", "08:30:00");
-            cc3.put("GioRa", "17:15:00");
-            cc3.put("SoGioLam", 7.75);
-            cc3.put("TrangThai", "Có mặt");
-            cc3.put("GhiChu", "Đi muộn");
-            db.insert(TABLE_CHAM_CONG, null, cc3);
+            for (String[] empData : attendanceData) {
+                // Một số nhân viên có thể nghỉ ngẫu nhiên
+                if (Math.random() < 0.05) { // 5% khả năng nghỉ
+                    ContentValues cc = new ContentValues();
+                    cc.put("MaNhanVien", empData[0]);
+                    cc.put("NgayChamCong", dateStr);
+                    cc.put("GioVao", (String) null);
+                    cc.put("GioRa", (String) null);
+                    cc.put("SoGioLam", 0.0);
+                    cc.put("TrangThai", "Vắng mặt");
+                    cc.put("GhiChu", "Nghỉ không phép");
+                    db.insert(TABLE_CHAM_CONG, null, cc);
+                } else {
+                    // Thêm một chút biến động vào giờ làm việc
+                    double baseHours = Double.parseDouble(empData[3]);
+                    double variation = (Math.random() - 0.5) * 0.5; // ±15 phút
+                    double actualHours = Math.max(0, baseHours + variation);
+                    
+                    ContentValues cc = new ContentValues();
+                    cc.put("MaNhanVien", empData[0]);
+                    cc.put("NgayChamCong", dateStr);
+                    cc.put("GioVao", empData[1]);
+                    cc.put("GioRa", empData[2]);
+                    cc.put("SoGioLam", actualHours);
+                    cc.put("TrangThai", empData[4]);
+                    cc.put("GhiChu", empData[5]);
+                    db.insert(TABLE_CHAM_CONG, null, cc);
+                }
+            }
         }
     }
 
@@ -901,14 +1008,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     String maNhanVien = cursor.getString(0);
                     double luongCoBan = cursor.getDouble(1);
                     
-                    // Tính tổng số giờ làm trong tháng
-                    double soGioLam = getTotalWorkingHours(maNhanVien, thangNam);
+                    // Tính tổng số giờ làm và giờ tăng ca trong tháng
+                    AttendanceStats stats = getAttendanceStats(maNhanVien, thangNam);
                     
-                    // Phụ cấp mặc định (có thể tùy chỉnh)
-                    double phuCap = luongCoBan * 0.1; // 10% lương cơ bản
+                    // Tính lương giờ = lương cơ bản / 208 giờ (26 ngày × 8 giờ)
+                    double luongGio = luongCoBan / 208.0;
                     
-                    // Tổng lương = lương cơ bản + phụ cấp
-                    double tongLuong = luongCoBan + phuCap;
+                    // Phụ cấp cố định (10% lương cơ bản)
+                    double phuCap = luongCoBan * 0.1;
+                    
+                    // Lương tăng ca = số giờ tăng ca × lương giờ × 1.5
+                    double luongTangCa = stats.soGioTangCa * luongGio * 1.5;
+                    
+                    // Tổng lương = lương cơ bản + phụ cấp + lương tăng ca
+                    double tongLuong = luongCoBan + phuCap + luongTangCa;
                     
                     // Kiểm tra xem đã có bản ghi lương chưa
                     String checkQuery = "SELECT MaLuong FROM " + TABLE_LUONG + 
@@ -920,7 +1033,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     values.put("ThangNam", thangNam);
                     values.put("LuongCoBan", luongCoBan);
                     values.put("PhuCap", phuCap);
-                    values.put("SoGioLam", soGioLam);
+                    values.put("SoGioLam", stats.soGioLam);
                     values.put("TongLuong", tongLuong);
                     values.put("TrangThai", "Chưa thanh toán");
                     values.put("NgayTinhLuong", java.time.LocalDate.now().toString());
@@ -945,6 +1058,47 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         
         return count;
+    }
+    
+    // Class để lưu thống kê chấm công
+    public static class AttendanceStats {
+        public double soGioLam = 0;
+        public double soGioTangCa = 0;
+        public int soNgayLam = 0;
+    }
+    
+    public AttendanceStats getAttendanceStatsForSalary(String maNhanVien, String thangNam) {
+        return getAttendanceStats(maNhanVien, thangNam);
+    }
+    
+    private AttendanceStats getAttendanceStats(String maNhanVien, String thangNam) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        AttendanceStats stats = new AttendanceStats();
+        
+        try {
+            String query = "SELECT SoGioLam, COUNT(*) as SoNgayLam FROM " + TABLE_CHAM_CONG + 
+                          " WHERE MaNhanVien = ? AND strftime('%Y-%m', NgayChamCong) = ? " +
+                          " AND SoGioLam > 0";
+            Cursor cursor = db.rawQuery(query, new String[]{maNhanVien, thangNam});
+            
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    double gioLam = cursor.getDouble(0);
+                    stats.soGioLam += gioLam;
+                    stats.soNgayLam++;
+                    
+                    // Tính giờ tăng ca (> 8 giờ/ngày)
+                    if (gioLam > 8.0) {
+                        stats.soGioTangCa += (gioLam - 8.0);
+                    }
+                } while (cursor.moveToNext());
+                cursor.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return stats;
     }
 
     private double getTotalWorkingHours(String maNhanVien, String thangNam) {

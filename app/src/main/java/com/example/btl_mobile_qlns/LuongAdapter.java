@@ -63,6 +63,9 @@ public class LuongAdapter extends BaseAdapter {
         TextView tvLuongCoBan = convertView.findViewById(R.id.tv_luong_co_ban);
         TextView tvPhuCap = convertView.findViewById(R.id.tv_phu_cap);
         TextView tvSoGioLam = convertView.findViewById(R.id.tv_so_gio_lam);
+        TextView tvSoNgayLam = convertView.findViewById(R.id.tv_so_ngay_lam);
+        TextView tvGioTangCa = convertView.findViewById(R.id.tv_gio_tang_ca);
+        TextView tvLuongTangCa = convertView.findViewById(R.id.tv_luong_tang_ca);
         TextView tvTongLuong = convertView.findViewById(R.id.tv_tong_luong);
         TextView tvTrangThai = convertView.findViewById(R.id.tv_trang_thai);
         LinearLayout layoutButtons = convertView.findViewById(R.id.layout_buttons);
@@ -84,6 +87,12 @@ public class LuongAdapter extends BaseAdapter {
         tvLuongCoBan.setText("Lương cơ bản: " + currencyFormat.format(luong.getLuongCoBan()));
         tvPhuCap.setText("Phụ cấp: " + currencyFormat.format(luong.getPhuCap()));
         tvSoGioLam.setText("Số giờ làm: " + String.format("%.1f", luong.getSoGioLam()) + " giờ");
+        
+        // Hiển thị thông tin chi tiết
+        tvSoNgayLam.setText("Số ngày: " + luong.getSoNgayLam() + " ngày");
+        tvGioTangCa.setText("Giờ tăng ca: " + String.format("%.1f", luong.getSoGioTangCa()) + " giờ");
+        tvLuongTangCa.setText("Lương tăng ca: " + currencyFormat.format(luong.getLuongTangCa()));
+        
         tvTongLuong.setText("Tổng lương: " + currencyFormat.format(luong.getTongLuong()));
         tvTrangThai.setText("Trạng thái: " + luong.getTrangThai());
         

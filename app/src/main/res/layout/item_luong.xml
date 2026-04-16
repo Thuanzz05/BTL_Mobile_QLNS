@@ -72,7 +72,43 @@
             android:layout_height="wrap_content"
             android:text="Số giờ làm: 176.0 giờ"
             android:textSize="14sp"
-            android:textColor="#666" />
+            android:textColor="#666"
+            android:layout_marginBottom="4dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_so_ngay_lam"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Số ngày: 22 ngày"
+                android:textSize="14sp"
+                android:textColor="#666" />
+
+            <TextView
+                android:id="@+id/tv_gio_tang_ca"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Giờ tăng ca: 8.0 giờ"
+                android:textSize="14sp"
+                android:textColor="#FF9800"
+                android:gravity="end" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_luong_tang_ca"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lương tăng ca: 865.385 ₫"
+            android:textSize="14sp"
+            android:textColor="#FF9800"
+            android:layout_marginTop="4dp" />
 
     </LinearLayout>
 

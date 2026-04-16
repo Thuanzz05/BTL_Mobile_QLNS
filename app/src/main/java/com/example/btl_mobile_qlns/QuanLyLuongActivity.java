@@ -118,6 +118,22 @@ public class QuanLyLuongActivity extends AppCompatActivity {
         String nam = spNam.getSelectedItem().toString();
         String thangNam = nam + "-" + thang;
         
+        // Validation: Không cho tính lương tháng tương lai
+        Calendar current = Calendar.getInstance();
+        Calendar selected = Calendar.getInstance();
+        selected.set(Integer.parseInt(nam), Integer.parseInt(thang) - 1, 1);
+        
+        if (selected.after(current)) {
+            Toast.makeText(this, "Không thể tính lương cho tháng tương lai!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        // Kiểm tra có dữ liệu chấm công không
+        if (!hasAttendanceData(thangNam)) {
+            Toast.makeText(this, "Chưa có dữ liệu chấm công cho tháng " + thang + "/" + nam, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
         new AlertDialog.Builder(this)
             .setTitle("Tính lương tháng " + thang + "/" + nam)
             .setMessage("Bạn có chắc muốn tính lương cho tất cả nhân viên trong tháng này?\n\n" +
@@ -125,6 +141,24 @@ public class QuanLyLuongActivity extends AppCompatActivity {
             .setPositiveButton("Tính lương", (dialog, which) -> calculateSalary(thangNam))
             .setNegativeButton("Hủy", null)
             .show();
+    }
+    
+    private boolean hasAttendanceData(String thangNam) {
+        Cursor cursor = null;
+        try {
+            cursor = dbHelper.getReadableDatabase().rawQuery(
+                "SELECT COUNT(*) FROM ChamCong WHERE strftime('%Y-%m', NgayChamCong) = ? AND SoGioLam > 0",
+                new String[]{thangNam}
+            );
+            if (cursor != null && cursor.moveToFirst()) {
+                return cursor.getInt(0) > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+        return false;
     }
     
     private void calculateSalary(String thangNam) {
@@ -187,6 +221,16 @@ public class QuanLyLuongActivity extends AppCompatActivity {
                     
                     Luong luong = new Luong(maLuong, maNV, thang, luongCoBan, phuCap, soGioLam, tongLuong, trangThai);
                     luong.setNgayTinhLuong(ngayTinhLuong);
+                    
+                    // Tính toán thông tin chi tiết
+                    DatabaseHelper.AttendanceStats stats = dbHelper.getAttendanceStatsForSalary(maNV, thang);
+                    luong.setSoGioTangCa(stats.soGioTangCa);
+                    luong.setSoNgayLam(stats.soNgayLam);
+                    
+                    // Tính lương tăng ca
+                    double luongGio = luongCoBan / 208.0; // 26 ngày × 8 giờ
+                    double luongTangCa = stats.soGioTangCa * luongGio * 1.5;
+                    luong.setLuongTangCa(luongTangCa);
                     
                     // Lấy tên nhân viên
                     if (!"Employee".equals(currentRole)) {
