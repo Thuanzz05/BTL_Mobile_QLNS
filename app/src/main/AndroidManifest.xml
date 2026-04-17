@@ -73,6 +73,10 @@
             android:name=".QuanLyLuongActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ThongKeActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>
