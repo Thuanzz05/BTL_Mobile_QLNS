@@ -19,6 +19,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     private TextView tvWelcome;
     private Button btnQuanLyNV, btnQuanLyPB, btnQuanLyCV, btnChamCong, btnNghiPhep, btnLuong, btnThongKe, btnThongTin, btnDangXuat;
+    private androidx.cardview.widget.CardView cardQuanLyNV, cardQuanLyPB, cardQuanLyCV, cardLuong, cardThongKe;
     
     private DatabaseHelper dbHelper;
     private String currentUsername;
@@ -43,6 +44,8 @@ public class DashboardActivity extends AppCompatActivity {
     
     private void initViews() {
         tvWelcome = findViewById(R.id.tv_welcome);
+        
+        // Buttons
         btnQuanLyNV = findViewById(R.id.btn_quan_ly_nv);
         btnQuanLyPB = findViewById(R.id.btn_quan_ly_pb);
         btnQuanLyCV = findViewById(R.id.btn_quan_ly_cv);
@@ -52,6 +55,13 @@ public class DashboardActivity extends AppCompatActivity {
         btnThongKe = findViewById(R.id.btn_thong_ke);
         btnThongTin = findViewById(R.id.btn_thong_tin);
         btnDangXuat = findViewById(R.id.btn_dang_xuat);
+        
+        // CardViews
+        cardQuanLyNV = findViewById(R.id.card_quan_ly_nv);
+        cardQuanLyPB = findViewById(R.id.card_quan_ly_pb);
+        cardQuanLyCV = findViewById(R.id.card_quan_ly_cv);
+        cardLuong = findViewById(R.id.card_luong);
+        cardThongKe = findViewById(R.id.card_thong_ke);
     }
     
     private void setupDatabase() {
@@ -78,50 +88,42 @@ public class DashboardActivity extends AppCompatActivity {
     }
     
     private void applyPermissions() {
+        // Mặc định ẩn tất cả các CardView quản lý
+        cardQuanLyNV.setVisibility(android.view.View.GONE);
+        cardQuanLyPB.setVisibility(android.view.View.GONE);
+        cardQuanLyCV.setVisibility(android.view.View.GONE);
+        cardLuong.setVisibility(android.view.View.GONE);
+        cardThongKe.setVisibility(android.view.View.GONE);
+        
         // Admin: Full quyền tất cả chức năng
         if ("Admin".equals(currentRole)) {
-            btnQuanLyNV.setVisibility(android.view.View.VISIBLE);
-            btnQuanLyPB.setVisibility(android.view.View.VISIBLE);
-            btnQuanLyCV.setVisibility(android.view.View.VISIBLE);
-            btnChamCong.setVisibility(android.view.View.VISIBLE); // Admin có thể xem chấm công của tất cả
-            btnNghiPhep.setVisibility(android.view.View.VISIBLE);
-            btnLuong.setVisibility(android.view.View.VISIBLE);
-            btnThongKe.setVisibility(android.view.View.VISIBLE); // Admin có thể xem thống kê
-            btnThongTin.setVisibility(android.view.View.VISIBLE);
+            cardQuanLyNV.setVisibility(android.view.View.VISIBLE);
+            cardQuanLyPB.setVisibility(android.view.View.VISIBLE);
+            cardQuanLyCV.setVisibility(android.view.View.VISIBLE);
+            cardLuong.setVisibility(android.view.View.VISIBLE);
+            cardThongKe.setVisibility(android.view.View.VISIBLE);
         }
         // HR: Chuyên về nhân sự - quản lý nhân viên, lương, nghỉ phép
         else if ("HR".equals(currentRole)) {
-            btnQuanLyNV.setVisibility(android.view.View.VISIBLE);
-            btnQuanLyPB.setVisibility(android.view.View.VISIBLE);
-            btnQuanLyCV.setVisibility(android.view.View.VISIBLE);
-            btnChamCong.setVisibility(android.view.View.VISIBLE);
-            btnNghiPhep.setVisibility(android.view.View.VISIBLE);
-            btnLuong.setVisibility(android.view.View.VISIBLE); // HR quản lý lương
-            btnThongKe.setVisibility(android.view.View.VISIBLE); // HR có thể xem thống kê
-            btnThongTin.setVisibility(android.view.View.VISIBLE);
+            cardQuanLyNV.setVisibility(android.view.View.VISIBLE);
+            cardQuanLyPB.setVisibility(android.view.View.VISIBLE);
+            cardQuanLyCV.setVisibility(android.view.View.VISIBLE);
+            cardLuong.setVisibility(android.view.View.VISIBLE);
+            cardThongKe.setVisibility(android.view.View.VISIBLE);
         }
         // Manager: Quản lý cấp trung - chỉ quản lý nhân viên, không quản lý lương
         else if ("Manager".equals(currentRole)) {
-            btnQuanLyNV.setVisibility(android.view.View.VISIBLE);
-            btnQuanLyPB.setVisibility(android.view.View.GONE); // Manager không quản lý phòng ban
-            btnQuanLyCV.setVisibility(android.view.View.GONE); // Manager không quản lý chức vụ
-            btnChamCong.setVisibility(android.view.View.VISIBLE);
-            btnNghiPhep.setVisibility(android.view.View.VISIBLE);
-            btnLuong.setVisibility(android.view.View.GONE); // Manager không quản lý lương
-            btnThongKe.setVisibility(android.view.View.VISIBLE); // Manager có thể xem thống kê
-            btnThongTin.setVisibility(android.view.View.VISIBLE);
+            cardQuanLyNV.setVisibility(android.view.View.VISIBLE);
+            cardThongKe.setVisibility(android.view.View.VISIBLE);
         }
-        // Employee: Chỉ chấm công và nghỉ phép cá nhân
-        else {
-            btnQuanLyNV.setVisibility(android.view.View.GONE);
-            btnQuanLyPB.setVisibility(android.view.View.GONE);
-            btnQuanLyCV.setVisibility(android.view.View.GONE);
-            btnChamCong.setVisibility(android.view.View.VISIBLE);
-            btnNghiPhep.setVisibility(android.view.View.VISIBLE);
-            btnLuong.setVisibility(android.view.View.GONE);
-            btnThongKe.setVisibility(android.view.View.GONE); // Employee không xem thống kê
-            btnThongTin.setVisibility(android.view.View.VISIBLE);
-        }
+        // Employee: Chỉ chấm công, nghỉ phép và thông tin cá nhân
+        // Các card khác đã được ẩn ở trên
+        
+        // Các nút luôn hiển thị cho tất cả vai trò
+        btnChamCong.setVisibility(android.view.View.VISIBLE);
+        btnNghiPhep.setVisibility(android.view.View.VISIBLE);
+        btnThongTin.setVisibility(android.view.View.VISIBLE);
+        btnDangXuat.setVisibility(android.view.View.VISIBLE);
     }
     
     private void setupButtons() {

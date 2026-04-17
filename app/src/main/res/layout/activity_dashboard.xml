@@ -55,6 +55,7 @@
 
             <!-- Quản lý nhân viên -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/card_quan_ly_nv"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:layout_marginBottom="16dp"
@@ -77,6 +78,7 @@
 
             <!-- Quản lý phòng ban -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/card_quan_ly_pb"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:layout_marginBottom="16dp"
@@ -99,6 +101,7 @@
 
             <!-- Quản lý chức vụ -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/card_quan_ly_cv"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:layout_marginBottom="16dp"
@@ -165,6 +168,7 @@
 
             <!-- Lương -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/card_luong"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:layout_marginBottom="16dp"
@@ -187,6 +191,7 @@
 
             <!-- Thống kê -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/card_thong_ke"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:layout_marginBottom="16dp"
