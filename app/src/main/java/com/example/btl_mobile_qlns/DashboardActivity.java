@@ -18,7 +18,7 @@ import com.example.btl_mobile_qlns.database.DatabaseHelper;
 public class DashboardActivity extends AppCompatActivity {
 
     private TextView tvWelcome;
-    private Button btnQuanLyNV, btnQuanLyPB, btnQuanLyCV, btnChamCong, btnNghiPhep, btnLuong, btnThongTin, btnDangXuat;
+    private Button btnQuanLyNV, btnQuanLyPB, btnQuanLyCV, btnChamCong, btnNghiPhep, btnLuong, btnThongKe, btnThongTin, btnDangXuat;
     
     private DatabaseHelper dbHelper;
     private String currentUsername;
@@ -49,6 +49,7 @@ public class DashboardActivity extends AppCompatActivity {
         btnChamCong = findViewById(R.id.btn_cham_cong);
         btnNghiPhep = findViewById(R.id.btn_nghi_phep);
         btnLuong = findViewById(R.id.btn_luong);
+        btnThongKe = findViewById(R.id.btn_thong_ke);
         btnThongTin = findViewById(R.id.btn_thong_tin);
         btnDangXuat = findViewById(R.id.btn_dang_xuat);
     }
@@ -85,6 +86,7 @@ public class DashboardActivity extends AppCompatActivity {
             btnChamCong.setVisibility(android.view.View.VISIBLE); // Admin có thể xem chấm công của tất cả
             btnNghiPhep.setVisibility(android.view.View.VISIBLE);
             btnLuong.setVisibility(android.view.View.VISIBLE);
+            btnThongKe.setVisibility(android.view.View.VISIBLE); // Admin có thể xem thống kê
             btnThongTin.setVisibility(android.view.View.VISIBLE);
         }
         // HR: Chuyên về nhân sự - quản lý nhân viên, lương, nghỉ phép
@@ -95,6 +97,7 @@ public class DashboardActivity extends AppCompatActivity {
             btnChamCong.setVisibility(android.view.View.VISIBLE);
             btnNghiPhep.setVisibility(android.view.View.VISIBLE);
             btnLuong.setVisibility(android.view.View.VISIBLE); // HR quản lý lương
+            btnThongKe.setVisibility(android.view.View.VISIBLE); // HR có thể xem thống kê
             btnThongTin.setVisibility(android.view.View.VISIBLE);
         }
         // Manager: Quản lý cấp trung - chỉ quản lý nhân viên, không quản lý lương
@@ -105,6 +108,7 @@ public class DashboardActivity extends AppCompatActivity {
             btnChamCong.setVisibility(android.view.View.VISIBLE);
             btnNghiPhep.setVisibility(android.view.View.VISIBLE);
             btnLuong.setVisibility(android.view.View.GONE); // Manager không quản lý lương
+            btnThongKe.setVisibility(android.view.View.VISIBLE); // Manager có thể xem thống kê
             btnThongTin.setVisibility(android.view.View.VISIBLE);
         }
         // Employee: Chỉ chấm công và nghỉ phép cá nhân
@@ -115,6 +119,7 @@ public class DashboardActivity extends AppCompatActivity {
             btnChamCong.setVisibility(android.view.View.VISIBLE);
             btnNghiPhep.setVisibility(android.view.View.VISIBLE);
             btnLuong.setVisibility(android.view.View.GONE);
+            btnThongKe.setVisibility(android.view.View.GONE); // Employee không xem thống kê
             btnThongTin.setVisibility(android.view.View.VISIBLE);
         }
     }
@@ -168,6 +173,17 @@ public class DashboardActivity extends AppCompatActivity {
             intent.putExtra("username", currentUsername);
             intent.putExtra("role", currentRole);
             startActivity(intent);
+        });
+        
+        btnThongKe.setOnClickListener(v -> {
+            if ("Admin".equals(currentRole) || "HR".equals(currentRole) || "Manager".equals(currentRole)) {
+                Intent intent = new Intent(DashboardActivity.this, ThongKeActivity.class);
+                intent.putExtra("username", currentUsername);
+                intent.putExtra("role", currentRole);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "Bạn không có quyền truy cập chức năng này", Toast.LENGTH_SHORT).show();
+            }
         });
         
         btnThongTin.setOnClickListener(v -> {
