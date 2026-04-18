@@ -763,6 +763,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return success;
     }
 
+    // Kiểm tra mật khẩu hiện tại có đúng không
+    public boolean checkCurrentPassword(String username, String currentPassword) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_TAI_KHOAN + 
+                " WHERE TenDangNhap = ? AND MatKhau = ?", 
+                new String[]{username, currentPassword});
+        boolean isCorrect = (cursor.getCount() > 0);
+        cursor.close();
+        return isCorrect;
+    }
+
+    // Đổi mật khẩu
+    public boolean changePassword(String username, String newPassword) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("MatKhau", newPassword);
+        int result = db.update(TABLE_TAI_KHOAN, cv, "TenDangNhap = ?", new String[]{username});
+        return result > 0;
+    }
+
     public Cursor getUserInfo(String username) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT " +
