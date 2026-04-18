@@ -3,6 +3,8 @@ package com.example.btl_mobile_qlns;
 import android.app.DatePickerDialog;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -10,6 +12,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.btl_mobile_qlns.database.DatabaseHelper;
@@ -120,8 +123,88 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
         
         btnCapNhat.setOnClickListener(v -> capNhatThongTin());
         
-        btnDoiMatKhau.setOnClickListener(v -> {
-            Toast.makeText(this, "Chức năng đổi mật khẩu đang phát triển", Toast.LENGTH_SHORT).show();
+        btnDoiMatKhau.setOnClickListener(v -> showDoiMatKhauDialog());
+    }
+    
+    private void showDoiMatKhauDialog() {
+        // Inflate layout dialog
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_doi_mat_khau, null);
+        
+        EditText etMatKhauCu = dialogView.findViewById(R.id.et_mat_khau_cu);
+        EditText etMatKhauMoi = dialogView.findViewById(R.id.et_mat_khau_moi);
+        EditText etXacNhanMatKhau = dialogView.findViewById(R.id.et_xac_nhan_mat_khau);
+        
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setPositiveButton("Xác nhận", null) // Set null để tự xử lý dismiss
+                .setNegativeButton("Hủy", null)
+                .create();
+        
+        dialog.show();
+        
+        // Override nút Xác nhận để kiểm tra validation trước khi đóng dialog
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String matKhauCu = etMatKhauCu.getText().toString().trim();
+            String matKhauMoi = etMatKhauMoi.getText().toString().trim();
+            String xacNhanMatKhau = etXacNhanMatKhau.getText().toString().trim();
+            
+            // Validate mật khẩu hiện tại
+            if (matKhauCu.isEmpty()) {
+                etMatKhauCu.setError("Vui lòng nhập mật khẩu hiện tại");
+                etMatKhauCu.requestFocus();
+                return;
+            }
+            
+            // Validate mật khẩu mới
+            if (matKhauMoi.isEmpty()) {
+                etMatKhauMoi.setError("Vui lòng nhập mật khẩu mới");
+                etMatKhauMoi.requestFocus();
+                return;
+            }
+            
+            if (matKhauMoi.length() < 6) {
+                etMatKhauMoi.setError("Mật khẩu mới phải có ít nhất 6 ký tự");
+                etMatKhauMoi.requestFocus();
+                return;
+            }
+            
+            // Validate xác nhận mật khẩu
+            if (xacNhanMatKhau.isEmpty()) {
+                etXacNhanMatKhau.setError("Vui lòng xác nhận mật khẩu mới");
+                etXacNhanMatKhau.requestFocus();
+                return;
+            }
+            
+            if (!matKhauMoi.equals(xacNhanMatKhau)) {
+                etXacNhanMatKhau.setError("Mật khẩu xác nhận không khớp");
+                etXacNhanMatKhau.requestFocus();
+                return;
+            }
+            
+            // Kiểm tra mật khẩu mới không trùng mật khẩu cũ
+            if (matKhauCu.equals(matKhauMoi)) {
+                etMatKhauMoi.setError("Mật khẩu mới không được trùng mật khẩu cũ");
+                etMatKhauMoi.requestFocus();
+                return;
+            }
+            
+            // Kiểm tra mật khẩu hiện tại có đúng không
+            if (!dbHelper.checkCurrentPassword(currentUsername, matKhauCu)) {
+                etMatKhauCu.setError("Mật khẩu hiện tại không đúng");
+                etMatKhauCu.requestFocus();
+                return;
+            }
+            
+            // Thực hiện đổi mật khẩu
+            boolean success = dbHelper.changePassword(currentUsername, matKhauMoi);
+            if (success) {
+                Toast.makeText(ThongTinCaNhanActivity.this, 
+                        "Đổi mật khẩu thành công!", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            } else {
+                Toast.makeText(ThongTinCaNhanActivity.this, 
+                        "Lỗi khi đổi mật khẩu. Vui lòng thử lại!", Toast.LENGTH_SHORT).show();
+            }
         });
     }
     
@@ -157,7 +240,7 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
         }
         
         boolean success = dbHelper.updateEmployeePersonalInfo(maNhanVien, hoTen, ngaySinh, 
-                                                             gioiTinh, soDienThoai, email);
+                                                              gioiTinh, soDienThoai, email);
         
         if (success) {
             Toast.makeText(this, "Cập nhật thông tin thành công", Toast.LENGTH_SHORT).show();

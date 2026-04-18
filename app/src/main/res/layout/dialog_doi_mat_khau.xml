@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ĐỔI MẬT KHẨU"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#2196F3"
+        android:gravity="center"
+        android:layout_marginBottom="20dp" />
+
+    <!-- Mật khẩu hiện tại -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mật khẩu hiện tại"
+        android:textSize="14sp"
+        android:textColor="#666"
+        android:layout_marginBottom="4dp" />
+
+    <EditText
+        android:id="@+id/et_mat_khau_cu"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/edit_text_background"
+        android:padding="12dp"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp"
+        android:hint="Nhập mật khẩu hiện tại"
+        android:inputType="textPassword" />
+
+    <!-- Mật khẩu mới -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mật khẩu mới"
+        android:textSize="14sp"
+        android:textColor="#666"
+        android:layout_marginBottom="4dp" />
+
+    <EditText
+        android:id="@+id/et_mat_khau_moi"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/edit_text_background"
+        android:padding="12dp"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp"
+        android:hint="Nhập mật khẩu mới (tối thiểu 6 ký tự)"
+        android:inputType="textPassword" />
+
+    <!-- Xác nhận mật khẩu mới -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Xác nhận mật khẩu mới"
+        android:textSize="14sp"
+        android:textColor="#666"
+        android:layout_marginBottom="4dp" />
+
+    <EditText
+        android:id="@+id/et_xac_nhan_mat_khau"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/edit_text_background"
+        android:padding="12dp"
+        android:textSize="16sp"
+        android:hint="Nhập lại mật khẩu mới"
+        android:inputType="textPassword" />
+
+</LinearLayout>
