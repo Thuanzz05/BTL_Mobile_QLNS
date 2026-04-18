@@ -235,7 +235,26 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
         String gioiTinh = rbNam.isChecked() ? "Nam" : "Nữ";
         
         if (hoTen.isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập họ tên", Toast.LENGTH_SHORT).show();
+            etHoTen.setError("Vui lòng nhập họ tên");
+            etHoTen.requestFocus();
+            return;
+        }
+
+        if (ngaySinh.isEmpty()) {
+            etNgaySinh.setError("Vui lòng chọn ngày sinh");
+            etNgaySinh.requestFocus();
+            return;
+        }
+
+        if (soDienThoai.length() != 10) {
+            etSoDienThoai.setError("Số điện thoại phải có đúng 10 chữ số");
+            etSoDienThoai.requestFocus();
+            return;
+        }
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            etEmail.setError("Định dạng Email không hợp lệ");
+            etEmail.requestFocus();
             return;
         }
         

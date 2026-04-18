@@ -68,7 +68,12 @@ public class QuanLyNhanVienActivity extends AppCompatActivity {
     }
 
     private void hienThiDanhSach(Cursor cursor) {
-        listNhanVien = new ArrayList<>();
+        if (listNhanVien == null) {
+            listNhanVien = new ArrayList<>();
+        } else {
+            listNhanVien.clear();
+        }
+
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 String maNV = cursor.getString(cursor.getColumnIndexOrThrow("MaNhanVien"));
@@ -91,20 +96,24 @@ public class QuanLyNhanVienActivity extends AppCompatActivity {
             listView.setVisibility(View.VISIBLE);
         }
 
-        adapter = new NhanVienAdapter(this, listNhanVien, new NhanVienAdapter.OnNhanVienActionListener() {
-            @Override
-            public void onDelete(NhanVien nhanVien) {
-                xacNhanXoaNhanVien(nhanVien);
-            }
+        if (adapter == null) {
+            adapter = new NhanVienAdapter(this, listNhanVien, new NhanVienAdapter.OnNhanVienActionListener() {
+                @Override
+                public void onDelete(NhanVien nhanVien) {
+                    xacNhanXoaNhanVien(nhanVien);
+                }
 
-            @Override
-            public void onEdit(NhanVien nhanVien) {
-                Intent intent = new Intent(QuanLyNhanVienActivity.this, ThemNhanVienActivity.class);
-                intent.putExtra("ma_nv", nhanVien.getMaNhanVien());
-                startForResult.launch(intent);
-            }
-        });
-        listView.setAdapter(adapter);
+                @Override
+                public void onEdit(NhanVien nhanVien) {
+                    Intent intent = new Intent(QuanLyNhanVienActivity.this, ThemNhanVienActivity.class);
+                    intent.putExtra("ma_nv", nhanVien.getMaNhanVien());
+                    startForResult.launch(intent);
+                }
+            });
+            listView.setAdapter(adapter);
+        } else {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     private void xacNhanXoaNhanVien(NhanVien nv) {

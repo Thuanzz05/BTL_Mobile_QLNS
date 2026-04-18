@@ -179,7 +179,26 @@ public class ThemNhanVienActivity extends AppCompatActivity {
         String maCV = listMaCV.get(spChucVu.getSelectedItemPosition());
 
         if (hoTen.isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập họ tên", Toast.LENGTH_SHORT).show();
+            etHoTen.setError("Vui lòng nhập họ tên");
+            etHoTen.requestFocus();
+            return;
+        }
+
+        if (ngaySinh.isEmpty()) {
+            etNgaySinh.setError("Vui lòng chọn ngày sinh");
+            etNgaySinh.requestFocus();
+            return;
+        }
+
+        if (sdt.length() != 10) {
+            etSDT.setError("Số điện thoại phải có đúng 10 chữ số");
+            etSDT.requestFocus();
+            return;
+        }
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            etEmail.setError("Định dạng Email không hợp lệ");
+            etEmail.requestFocus();
             return;
         }
 
