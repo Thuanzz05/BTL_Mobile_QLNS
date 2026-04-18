@@ -76,6 +76,29 @@
 
             </androidx.cardview.widget.CardView>
 
+            <!-- Quản lý hợp đồng -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_quan_ly_hd"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="#009688">
+
+                <Button
+                    android:id="@+id/btn_quan_ly_hd"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="QUẢN LÝ HỢP ĐỒNG"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:background="@android:color/transparent"
+                    android:gravity="center" />
+
+            </androidx.cardview.widget.CardView>
+
             <!-- Quản lý phòng ban -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/card_quan_ly_pb"
@@ -212,7 +235,7 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- Đăng xuất -->
+            <!-- Thông tin cá nhân -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
