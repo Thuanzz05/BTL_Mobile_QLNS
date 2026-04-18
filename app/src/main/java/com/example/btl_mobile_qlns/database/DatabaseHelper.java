@@ -1308,4 +1308,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + TABLE_HOP_DONG + " WHERE MaHopDong = ?", new String[]{maHD});
     }
+
+    // Methods cho quản lý tài khoản (Admin)
+    public Cursor getAllAccounts() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT tk.*, nv.HoTen FROM " + TABLE_TAI_KHOAN + " tk " +
+                      "LEFT JOIN " + TABLE_NHAN_VIEN + " nv ON tk.MaNhanVien = nv.MaNhanVien " +
+                      "ORDER BY tk.TenDangNhap";
+        return db.rawQuery(query, null);
+    }
+
+    public boolean deleteAccount(String username) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        // Không cho phép xóa tài khoản admin chính
+        if ("admin".equals(username)) return false;
+        
+        int result = db.delete(TABLE_TAI_KHOAN, "TenDangNhap = ?", new String[]{username});
+        return result > 0;
+    }
+
+    public boolean updateAccountStatus(String username, int status) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("TrangThai", status);
+        int result = db.update(TABLE_TAI_KHOAN, values, "TenDangNhap = ?", new String[]{username});
+        return result > 0;
+    }
 }

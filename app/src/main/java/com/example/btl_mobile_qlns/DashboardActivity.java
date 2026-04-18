@@ -18,8 +18,8 @@ import com.example.btl_mobile_qlns.database.DatabaseHelper;
 public class DashboardActivity extends AppCompatActivity {
 
     private TextView tvWelcome;
-    private Button btnQuanLyNV, btnQuanLyPB, btnQuanLyCV, btnChamCong, btnNghiPhep, btnLuong, btnThongKe, btnThongTin, btnDangXuat, btnQuanLyHD;
-    private androidx.cardview.widget.CardView cardQuanLyNV, cardQuanLyPB, cardQuanLyCV, cardLuong, cardThongKe, cardQuanLyHD;
+    private Button btnQuanLyNV, btnQuanLyPB, btnQuanLyCV, btnChamCong, btnNghiPhep, btnLuong, btnThongKe, btnThongTin, btnDangXuat, btnQuanLyHD, btnQuanLyTK;
+    private androidx.cardview.widget.CardView cardQuanLyNV, cardQuanLyPB, cardQuanLyCV, cardLuong, cardThongKe, cardQuanLyHD, cardQuanLyTK;
     
     private DatabaseHelper dbHelper;
     private String currentUsername;
@@ -64,6 +64,8 @@ public class DashboardActivity extends AppCompatActivity {
         cardThongKe = findViewById(R.id.card_thong_ke);
         cardQuanLyHD = findViewById(R.id.card_quan_ly_hd);
         btnQuanLyHD = findViewById(R.id.btn_quan_ly_hd);
+        cardQuanLyTK = findViewById(R.id.card_quan_ly_tk);
+        btnQuanLyTK = findViewById(R.id.btn_quan_ly_tk);
     }
     
     private void setupDatabase() {
@@ -97,6 +99,7 @@ public class DashboardActivity extends AppCompatActivity {
         cardLuong.setVisibility(android.view.View.GONE);
         cardThongKe.setVisibility(android.view.View.GONE);
         cardQuanLyHD.setVisibility(android.view.View.GONE);
+        cardQuanLyTK.setVisibility(android.view.View.GONE);
         
         // Admin: Full quyền tất cả chức năng
         if ("Admin".equals(currentRole)) {
@@ -106,6 +109,7 @@ public class DashboardActivity extends AppCompatActivity {
             cardLuong.setVisibility(android.view.View.VISIBLE);
             cardThongKe.setVisibility(android.view.View.VISIBLE);
             cardQuanLyHD.setVisibility(android.view.View.VISIBLE);
+            cardQuanLyTK.setVisibility(android.view.View.VISIBLE);
         }
         // HR: Chuyên về nhân sự - quản lý nhân viên, lương, nghỉ phép
         else if ("HR".equals(currentRole)) {
@@ -206,6 +210,15 @@ public class DashboardActivity extends AppCompatActivity {
         btnQuanLyHD.setOnClickListener(v -> {
             if ("Admin".equals(currentRole) || "HR".equals(currentRole)) {
                 Intent intent = new Intent(DashboardActivity.this, QuanLyHopDongActivity.class);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "Bạn không có quyền truy cập chức năng này", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnQuanLyTK.setOnClickListener(v -> {
+            if ("Admin".equals(currentRole)) {
+                Intent intent = new Intent(DashboardActivity.this, QuanLyTaiKhoanActivity.class);
                 startActivity(intent);
             } else {
                 Toast.makeText(this, "Bạn không có quyền truy cập chức năng này", Toast.LENGTH_SHORT).show();
