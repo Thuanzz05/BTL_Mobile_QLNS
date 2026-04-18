@@ -20,15 +20,30 @@
             android:background="@drawable/gradient_header"
             android:padding="16dp">
 
-            <TextView
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="QUẢN LÝ NHÂN VIÊN"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:gravity="center"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="16dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="QUẢN LÝ NHÂN VIÊN"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:layout_centerInParent="true" />
+                
+                <ImageButton
+                    android:id="@+id/btn_export_pdf"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:src="@android:drawable/ic_menu_save"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="@android:color/white"
+                    android:contentDescription="Xuất PDF" />
+            </RelativeLayout>
 
             <androidx.appcompat.widget.SearchView
                 android:id="@+id/search_view"
