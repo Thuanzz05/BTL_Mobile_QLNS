@@ -426,6 +426,11 @@ public class QuanLyLuongActivity extends AppCompatActivity {
             Toast.makeText(this, "Đã copy báo cáo vào clipboard!", Toast.LENGTH_SHORT).show();
         });
         
+        // Nút Xuất PDF
+        builder.setNeutralButton("Xuất PDF", (dialog, which) -> {
+            exportToPdf(report, thang, nam);
+        });
+        
         builder.setNegativeButton("Đóng", null);
         
         AlertDialog dialog = builder.create();
@@ -437,6 +442,59 @@ public class QuanLyLuongActivity extends AppCompatActivity {
                 (int) (getResources().getDisplayMetrics().widthPixels * 0.95),
                 (int) (getResources().getDisplayMetrics().heightPixels * 0.8)
             );
+        }
+    }
+    
+    private void exportToPdf(String reportContent, String thang, String nam) {
+        android.graphics.pdf.PdfDocument document = new android.graphics.pdf.PdfDocument();
+        int pageNumber = 1;
+        android.graphics.pdf.PdfDocument.PageInfo pageInfo = new android.graphics.pdf.PdfDocument.PageInfo.Builder(595, 842, pageNumber).create();
+        android.graphics.pdf.PdfDocument.Page page = document.startPage(pageInfo);
+
+        android.graphics.Canvas canvas = page.getCanvas();
+        android.graphics.Paint paint = new android.graphics.Paint();
+        paint.setTypeface(android.graphics.Typeface.MONOSPACE);
+        paint.setTextSize(12);
+        paint.setColor(android.graphics.Color.BLACK);
+
+        int x = 40, y = 50;
+        for (String line : reportContent.split("\n")) {
+            canvas.drawText(line, x, y, paint);
+            y += paint.descent() - paint.ascent();
+            if (y > 800) {
+                document.finishPage(page);
+                pageNumber++;
+                pageInfo = new android.graphics.pdf.PdfDocument.PageInfo.Builder(595, 842, pageNumber).create();
+                page = document.startPage(pageInfo);
+                canvas = page.getCanvas();
+                y = 50;
+            }
+        }
+        document.finishPage(page);
+
+        String fileName = "BaoCaoLuong_" + thang + "_" + nam + ".pdf";
+        try {
+            java.io.OutputStream fos;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                android.content.ContentValues values = new android.content.ContentValues();
+                values.put(android.provider.MediaStore.Downloads.DISPLAY_NAME, fileName);
+                values.put(android.provider.MediaStore.Downloads.MIME_TYPE, "application/pdf");
+                values.put(android.provider.MediaStore.Downloads.RELATIVE_PATH, android.os.Environment.DIRECTORY_DOWNLOADS);
+                android.net.Uri uri = getContentResolver().insert(android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
+                fos = getContentResolver().openOutputStream(uri);
+            } else {
+                java.io.File dir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS);
+                if (!dir.exists()) dir.mkdirs();
+                java.io.File file = new java.io.File(dir, fileName);
+                fos = new java.io.FileOutputStream(file);
+            }
+            document.writeTo(fos);
+            document.close();
+            if (fos != null) fos.close();
+            Toast.makeText(this, "Đã lưu tệp PDF thành công vào thư mục Tải Xuống (Downloads)!", Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Lỗi khi lưu PDF: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
     
