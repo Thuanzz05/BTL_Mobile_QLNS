@@ -25,7 +25,7 @@ public class NghiPhepActivity extends AppCompatActivity {
 
     private TextView tvTitle, tvSoNgayNghi;
     private EditText etNgayBatDau, etNgayKetThuc, etLyDo;
-    private Button btnXinNghiPhep, btnBack;
+    private Button btnXinNghiPhep;
     private ListView lvLichSuNghiPhep;
     
     private DatabaseHelper dbHelper;
@@ -53,7 +53,6 @@ public class NghiPhepActivity extends AppCompatActivity {
         etNgayKetThuc = findViewById(R.id.et_ngay_ket_thuc);
         etLyDo = findViewById(R.id.et_ly_do);
         btnXinNghiPhep = findViewById(R.id.btn_xin_nghi_phep);
-        btnBack = findViewById(R.id.btn_back);
         lvLichSuNghiPhep = findViewById(R.id.lv_lich_su_nghi_phep);
     }
     
@@ -139,13 +138,6 @@ public class NghiPhepActivity extends AppCompatActivity {
     
     private void setupButtons() {
         btnXinNghiPhep.setOnClickListener(v -> submitLeaveRequest());
-        
-        btnBack.setOnClickListener(v -> {
-            Intent intent = new Intent(NghiPhepActivity.this, DashboardActivity.class);
-            intent.putExtra("username", currentUsername);
-            startActivity(intent);
-            finish();
-        });
     }
     
     private void submitLeaveRequest() {
