@@ -1083,7 +1083,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         
         try {
             // Lấy danh sách nhân viên đang làm việc
-            String query = "SELECT nv.MaNhanVien, cv.MucLuongCoBan " +
+            // Lấy danh sách nhân viên và mức lương từ hợp đồng mới nhất (nếu có)
+            String query = "SELECT nv.MaNhanVien, " +
+                          "COALESCE((SELECT hd.MucLuong FROM " + TABLE_HOP_DONG + " hd " +
+                          "WHERE hd.MaNhanVien = nv.MaNhanVien AND hd.TrangThai = 'Hiệu lực' " +
+                          "ORDER BY hd.NgayBatDau DESC LIMIT 1), cv.MucLuongCoBan) " +
                           "FROM " + TABLE_NHAN_VIEN + " nv " +
                           "LEFT JOIN " + TABLE_CHUC_VU + " cv ON nv.MaChucVu = cv.MaChucVu " +
                           "WHERE nv.TrangThaiLamViec = 'Đang làm việc'";
@@ -1236,5 +1240,72 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         int result = db.update(TABLE_LUONG, values, 
                              "MaLuong = ?", new String[]{String.valueOf(maLuong)});
         return result > 0;
+    }
+    public Cursor getAllHopDong() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_HOP_DONG + " ORDER BY MaHopDong DESC", null);
+    }
+
+    public Cursor searchHopDong(String query) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_HOP_DONG + " WHERE MaHopDong LIKE ? OR MaNhanVien LIKE ?", 
+                new String[]{"%" + query + "%", "%" + query + "%"});
+    }
+
+    public boolean insertHopDong(String maHD, String maNV, String loaiHD, String ngayBD, String ngayKT, double mucLuong) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("MaHopDong", maHD);
+        cv.put("MaNhanVien", maNV);
+        cv.put("LoaiHopDong", loaiHD);
+        cv.put("NgayBatDau", ngayBD);
+        cv.put("NgayKetThuc", ngayKT);
+        cv.put("MucLuong", mucLuong);
+        cv.put("TrangThai", "Hiệu lực");
+        long result = db.insert(TABLE_HOP_DONG, null, cv);
+        return result != -1;
+    }
+
+    public Cursor getEmployeeListForSpinner() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT MaNhanVien as _id, MaNhanVien || ' - ' || HoTen as DisplayName FROM " + TABLE_NHAN_VIEN, null);
+    }
+
+    public double getSalaryByEmployee(String maNV) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT cv.MucLuongCoBan FROM " + TABLE_NHAN_VIEN + " nv " +
+                "JOIN " + TABLE_CHUC_VU + " cv ON nv.MaChucVu = cv.MaChucVu " +
+                "WHERE nv.MaNhanVien = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{maNV});
+        double salary = 0;
+        if (cursor.moveToFirst()) {
+            salary = cursor.getDouble(0);
+        }
+        cursor.close();
+        return salary;
+    }
+
+    public boolean updateHopDong(String maHD, String maNV, String loaiHD, String ngayBD, String ngayKT, double mucLuong, String trangThai) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("MaNhanVien", maNV);
+        cv.put("LoaiHopDong", loaiHD);
+        cv.put("NgayBatDau", ngayBD);
+        cv.put("NgayKetThuc", ngayKT);
+        cv.put("MucLuong", mucLuong);
+        cv.put("TrangThai", trangThai);
+        int result = db.update(TABLE_HOP_DONG, cv, "MaHopDong = ?", new String[]{maHD});
+        return result > 0;
+    }
+
+    public boolean deleteHopDong(String maHD) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int result = db.delete(TABLE_HOP_DONG, "MaHopDong = ?", new String[]{maHD});
+        return result > 0;
+    }
+
+    public Cursor getHopDongById(String maHD) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_HOP_DONG + " WHERE MaHopDong = ?", new String[]{maHD});
     }
 }
