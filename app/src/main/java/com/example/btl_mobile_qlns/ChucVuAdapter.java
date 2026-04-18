@@ -112,6 +112,18 @@ public class ChucVuAdapter extends BaseAdapter {
     }
     
     private void showDeleteDialog(ChucVu chucVu, int position) {
+        // Kiểm tra ràng buộc: Nếu còn nhân viên thì không cho xóa
+        if (chucVu.getSoNhanVien() > 0) {
+            new AlertDialog.Builder(context)
+                .setTitle("Không thể xóa")
+                .setMessage("Chức vụ \"" + chucVu.getTenChucVu() + "\" hiện đang có " + 
+                           chucVu.getSoNhanVien() + " nhân viên đang đảm nhiệm.\n\n" +
+                           "Vui lòng thay đổi chức vụ cho các nhân viên này trước khi thực hiện xóa.")
+                .setPositiveButton("Đã hiểu", null)
+                .show();
+            return;
+        }
+
         new AlertDialog.Builder(context)
             .setTitle("Xóa chức vụ")
             .setMessage("Bạn có chắc muốn xóa chức vụ \"" + chucVu.getTenChucVu() + "\"?\n\n" +

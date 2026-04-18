@@ -1,17 +1,21 @@
 package com.example.btl_mobile_qlns;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -21,16 +25,19 @@ import java.util.Calendar;
 
 public class ThongTinCaNhanActivity extends AppCompatActivity {
 
+    private static final int PICK_IMAGE_REQUEST = 1;
     private TextView tvTitle, tvMaNV, tvVaiTro;
     private EditText etHoTen, etNgaySinh, etSoDienThoai, etEmail;
     private RadioGroup rgGioiTinh;
     private RadioButton rbNam, rbNu;
     private Button btnCapNhat, btnDoiMatKhau;
+    private ImageView ivAvatar;
     
     private DatabaseHelper dbHelper;
     private String currentUsername;
     private String maNhanVien;
     private String currentRole;
+    private String imageUri = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +63,7 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
         rbNu = findViewById(R.id.rb_nu);
         btnCapNhat = findViewById(R.id.btn_cap_nhat);
         btnDoiMatKhau = findViewById(R.id.btn_doi_mat_khau);
+        ivAvatar = findViewById(R.id.iv_avatar);
     }
     
     private void setupDatabase() {
@@ -112,6 +120,16 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
                     rbNu.setChecked(true);
                 }
                 
+                // Hiển thị ảnh đại diện
+                imageUri = cursorEmployee.getString(cursorEmployee.getColumnIndexOrThrow("HinhAnh"));
+                if (imageUri != null && !imageUri.isEmpty()) {
+                    try {
+                        ivAvatar.setImageURI(Uri.parse(imageUri));
+                    } catch (Exception e) {
+                        ivAvatar.setImageResource(R.drawable.ic_person);
+                    }
+                }
+                
                 cursorEmployee.close();
             }
         }
@@ -124,6 +142,26 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
         btnCapNhat.setOnClickListener(v -> capNhatThongTin());
         
         btnDoiMatKhau.setOnClickListener(v -> showDoiMatKhauDialog());
+
+        ivAvatar.setOnClickListener(v -> openGallery());
+    }
+    
+    private void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            Uri uri = data.getData();
+            getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            imageUri = uri.toString();
+            ivAvatar.setImageURI(uri);
+        }
     }
     
     private void showDoiMatKhauDialog() {
@@ -235,12 +273,31 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
         String gioiTinh = rbNam.isChecked() ? "Nam" : "Nữ";
         
         if (hoTen.isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập họ tên", Toast.LENGTH_SHORT).show();
+            etHoTen.setError("Vui lòng nhập họ tên");
+            etHoTen.requestFocus();
+            return;
+        }
+
+        if (ngaySinh.isEmpty()) {
+            etNgaySinh.setError("Vui lòng chọn ngày sinh");
+            etNgaySinh.requestFocus();
+            return;
+        }
+
+        if (soDienThoai.length() != 10) {
+            etSoDienThoai.setError("Số điện thoại phải có đúng 10 chữ số");
+            etSoDienThoai.requestFocus();
+            return;
+        }
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            etEmail.setError("Định dạng Email không hợp lệ");
+            etEmail.requestFocus();
             return;
         }
         
         boolean success = dbHelper.updateEmployeePersonalInfo(maNhanVien, hoTen, ngaySinh, 
-                                                              gioiTinh, soDienThoai, email);
+                                                               gioiTinh, soDienThoai, email, imageUri);
         
         if (success) {
             Toast.makeText(this, "Cập nhật thông tin thành công", Toast.LENGTH_SHORT).show();

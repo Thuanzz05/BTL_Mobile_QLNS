@@ -116,6 +116,18 @@ public class PhongBanAdapter extends BaseAdapter {
     }
     
     private void showDeleteDialog(PhongBan phongBan, int position) {
+        // Kiểm tra ràng buộc: Nếu còn nhân viên thì không cho xóa
+        if (phongBan.getSoNhanVien() > 0) {
+            new AlertDialog.Builder(context)
+                .setTitle("Không thể xóa")
+                .setMessage("Phòng ban \"" + phongBan.getTenPhongBan() + "\" hiện đang có " + 
+                           phongBan.getSoNhanVien() + " nhân viên đang làm việc.\n\n" +
+                           "Vui lòng chuyển các nhân viên này sang phòng ban khác trước khi thực hiện xóa.")
+                .setPositiveButton("Đã hiểu", null)
+                .show();
+            return;
+        }
+
         new AlertDialog.Builder(context)
             .setTitle("Xóa phòng ban")
             .setMessage("Bạn có chắc muốn xóa phòng ban \"" + phongBan.getTenPhongBan() + "\"?\n\n" +

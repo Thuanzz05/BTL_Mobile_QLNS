@@ -877,7 +877,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean updateEmployeePersonalInfo(String maNhanVien, String hoTen, String ngaySinh, 
-                                            String gioiTinh, String soDienThoai, String email) {
+                                             String gioiTinh, String soDienThoai, String email, String hinhAnh) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("HoTen", hoTen);
@@ -885,6 +885,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("GioiTinh", gioiTinh);
         values.put("SoDienThoai", soDienThoai);
         values.put("Email", email);
+        if (hinhAnh != null) {
+            values.put("HinhAnh", hinhAnh);
+        }
         
         int result = db.update(TABLE_NHAN_VIEN, values, 
                              "MaNhanVien = ?", new String[]{maNhanVien});
