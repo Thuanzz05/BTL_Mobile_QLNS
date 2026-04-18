@@ -111,13 +111,17 @@ public class DashboardActivity extends AppCompatActivity {
             cardLuong.setVisibility(android.view.View.VISIBLE);
             cardThongKe.setVisibility(android.view.View.VISIBLE);
         }
-        // Manager: Quản lý cấp trung - chỉ quản lý nhân viên, không quản lý lương
+        // Manager: Quản lý cấp trung - quản lý nhân viên, xem lương
         else if ("Manager".equals(currentRole)) {
             cardQuanLyNV.setVisibility(android.view.View.VISIBLE);
+            cardLuong.setVisibility(android.view.View.VISIBLE);
             cardThongKe.setVisibility(android.view.View.VISIBLE);
         }
-        // Employee: Chỉ chấm công, nghỉ phép và thông tin cá nhân
-        // Các card khác đã được ẩn ở trên
+        // Employee: Chấm công, nghỉ phép, xem lương cá nhân, thông tin cá nhân
+        else if ("Employee".equals(currentRole)) {
+            cardLuong.setVisibility(android.view.View.VISIBLE);
+            btnLuong.setText("XEM LƯƠNG CÁ NHÂN");
+        }
         
         // Các nút luôn hiển thị cho tất cả vai trò
         btnChamCong.setVisibility(android.view.View.VISIBLE);

@@ -71,15 +71,18 @@ public class LuongAdapter extends BaseAdapter {
         LinearLayout layoutButtons = convertView.findViewById(R.id.layout_buttons);
         Button btnThanhToan = convertView.findViewById(R.id.btn_thanh_toan);
         
-        // Hiển thị thông tin nhân viên nếu không phải Employee
+        // Hiển thị thông tin nhân viên
         if (!"Employee".equals(currentRole)) {
+            // Admin/HR/Manager: hiển thị mã NV và họ tên
             tvMaNV.setText("Mã NV: " + luong.getMaNhanVien());
             tvHoTen.setText("Họ tên: " + (luong.getHoTen() != null ? luong.getHoTen() : "N/A"));
             tvMaNV.setVisibility(View.VISIBLE);
             tvHoTen.setVisibility(View.VISIBLE);
         } else {
+            // Employee: hiển thị tên của mình
             tvMaNV.setVisibility(View.GONE);
-            tvHoTen.setVisibility(View.GONE);
+            tvHoTen.setText(luong.getHoTen() != null ? luong.getHoTen() : "");
+            tvHoTen.setVisibility(View.VISIBLE);
         }
         
         // Hiển thị thông tin lương

@@ -28,12 +28,14 @@ public class QuanLyLuongActivity extends AppCompatActivity {
     private Spinner spThang, spNam;
     private Button btnTinhLuong, btnXemLuong;
     private ListView lvLuong;
+    private View layoutChonThang;
     
     private DatabaseHelper dbHelper;
     private LuongAdapter adapter;
     private List<Luong> listLuong;
     private String currentRole;
     private String currentUsername;
+    private boolean isInitialLoad = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,18 +67,26 @@ public class QuanLyLuongActivity extends AppCompatActivity {
     }
     
     private void setupUI() {
-        tvTitle.setText("QUẢN LÝ LƯƠNG");
-        
         // Hiển thị tháng hiện tại
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("MM/yyyy", Locale.getDefault());
         tvThangHienTai.setText("Tháng hiện tại: " + sdf.format(calendar.getTime()));
         
-        // Chỉ Admin và HR mới có thể tính lương
-        if ("Admin".equals(currentRole) || "HR".equals(currentRole)) {
-            btnTinhLuong.setVisibility(View.VISIBLE);
-        } else {
+        if ("Employee".equals(currentRole)) {
+            // Employee: giao diện xem lương cá nhân
+            tvTitle.setText("LƯƠNG CÁ NHÂN");
             btnTinhLuong.setVisibility(View.GONE);
+            btnXemLuong.setVisibility(View.GONE);
+        } else if ("Manager".equals(currentRole)) {
+            // Manager: xem lương nhân viên, không tính lương
+            tvTitle.setText("XEM LƯƠNG NHÂN VIÊN");
+            btnTinhLuong.setVisibility(View.GONE);
+            btnXemLuong.setVisibility(View.VISIBLE);
+        } else {
+            // Admin/HR: quản lý lương đầy đủ
+            tvTitle.setText("QUẢN LÝ LƯƠNG");
+            btnTinhLuong.setVisibility(View.VISIBLE);
+            btnXemLuong.setVisibility(View.VISIBLE);
         }
     }
     
@@ -111,7 +121,9 @@ public class QuanLyLuongActivity extends AppCompatActivity {
         spThang.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, android.view.View view, int position, long id) {
-                loadSalaryByMonth();
+                if (!isInitialLoad) {
+                    loadSalaryByMonth();
+                }
             }
             @Override
             public void onNothingSelected(android.widget.AdapterView<?> parent) {}
@@ -120,7 +132,9 @@ public class QuanLyLuongActivity extends AppCompatActivity {
         spNam.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, android.view.View view, int position, long id) {
-                loadSalaryByMonth();
+                if (!isInitialLoad) {
+                    loadSalaryByMonth();
+                }
             }
             @Override
             public void onNothingSelected(android.widget.AdapterView<?> parent) {}
@@ -207,8 +221,8 @@ public class QuanLyLuongActivity extends AppCompatActivity {
         String nam = String.valueOf(calendar.get(Calendar.YEAR));
         String thangNam = nam + "-" + thang;
         
-        // Auto load dữ liệu khi mở app
         loadSalary(thangNam);
+        isInitialLoad = false;
     }
     
     private void loadSalaryByMonth() {
@@ -221,11 +235,6 @@ public class QuanLyLuongActivity extends AppCompatActivity {
         }
         
         String thangNam = nam + "-" + thang;
-        
-        // Debug log
-        android.util.Log.d("QuanLyLuong", "Xem lương cho tháng: " + thangNam);
-        Toast.makeText(this, "Đang tải lương tháng " + thang + "/" + nam, Toast.LENGTH_SHORT).show();
-        
         loadSalary(thangNam);
     }
     
@@ -234,21 +243,16 @@ public class QuanLyLuongActivity extends AppCompatActivity {
             listLuong = new ArrayList<>();
             Cursor cursor;
             
-            // Debug log
-            android.util.Log.d("QuanLyLuong", "Loading salary for: " + thangNam + ", Role: " + currentRole);
-            
             if ("Employee".equals(currentRole)) {
                 // Employee chỉ xem lương của mình
                 String maNhanVien = dbHelper.getMaNhanVienByUsername(currentUsername);
-                android.util.Log.d("QuanLyLuong", "Employee ID: " + maNhanVien);
                 cursor = dbHelper.getSalaryByEmployee(maNhanVien, thangNam);
             } else {
-                // Admin/HR xem tất cả
+                // Admin/HR/Manager xem tất cả
                 cursor = dbHelper.getSalaryByMonth(thangNam);
             }
             
             if (cursor != null && cursor.moveToFirst()) {
-                android.util.Log.d("QuanLyLuong", "Found " + cursor.getCount() + " salary records");
                 do {
                     int maLuong = cursor.getInt(cursor.getColumnIndexOrThrow("MaLuong"));
                     String maNV = cursor.getString(cursor.getColumnIndexOrThrow("MaNhanVien"));
@@ -274,18 +278,13 @@ public class QuanLyLuongActivity extends AppCompatActivity {
                     double luongTangCa = stats.soGioTangCa * luongGio * 1.5;
                     luong.setLuongTangCa(luongTangCa);
                     
-                    // Lấy tên nhân viên
-                    if (!"Employee".equals(currentRole)) {
-                        String hoTen = dbHelper.getEmployeeNameByMa(maNV);
-                        luong.setHoTen(hoTen);
-                    }
+                    // Lấy tên nhân viên (luôn lấy để hiển thị cho cả Employee)
+                    String hoTen = dbHelper.getEmployeeNameByMa(maNV);
+                    luong.setHoTen(hoTen);
                     
                     listLuong.add(luong);
                 } while (cursor.moveToNext());
                 cursor.close();
-            } else {
-                android.util.Log.d("QuanLyLuong", "No salary records found for: " + thangNam);
-                Toast.makeText(this, "Không tìm thấy dữ liệu lương cho tháng " + thangNam.substring(5) + "/" + thangNam.substring(0, 4), Toast.LENGTH_SHORT).show();
             }
             
             updateUI();
@@ -302,10 +301,6 @@ public class QuanLyLuongActivity extends AppCompatActivity {
         } else {
             adapter.updateData(listLuong);
         }
-        
-        if (listLuong.isEmpty()) {
-            Toast.makeText(this, "Chưa có dữ liệu lương cho tháng này", Toast.LENGTH_SHORT).show();
-        }
     }
     
     private void exportSalaryReport() {
@@ -321,8 +316,10 @@ public class QuanLyLuongActivity extends AppCompatActivity {
         
         // Tạo báo cáo chi tiết
         StringBuilder report = new StringBuilder();
-        report.append("📊 BÁO CÁO LƯƠNG THÁNG ").append(thang).append("/").append(nam).append("\n");
-        report.append("═══════════════════════════════════════\n\n");
+        report.append("           CÔNG TY QUẢN LÝ NHÂN SỰ           \n");
+        report.append("=============================================\n");
+        report.append(String.format("          BÁO CÁO LƯƠNG THÁNG %s/%s          \n", thang, nam));
+        report.append("=============================================\n\n");
         
         try {
             Cursor cursor;
@@ -336,6 +333,8 @@ public class QuanLyLuongActivity extends AppCompatActivity {
             if (cursor != null && cursor.moveToFirst()) {
                 double tongLuongCongTy = 0;
                 int soNhanVien = 0;
+                int daThanhToan = 0;
+                int chuaThanhToan = 0;
                 
                 do {
                     String maNV = cursor.getString(cursor.getColumnIndexOrThrow("MaNhanVien"));
@@ -347,45 +346,56 @@ public class QuanLyLuongActivity extends AppCompatActivity {
                     // Lấy thông tin chi tiết
                     DatabaseHelper.AttendanceStats stats = dbHelper.getAttendanceStatsForSalary(maNV, thangNam);
                     String hoTen = dbHelper.getEmployeeNameByMa(maNV);
+                    if (hoTen == null) hoTen = "Không xác định";
                     
                     // Tính lương tăng ca
                     double luongCoBanGoc = getLuongCoBanGocByMaNV(maNV);
                     double luongGio = luongCoBanGoc / 208.0;
                     double luongTangCa = stats.soGioTangCa * luongGio * 1.5;
                     
-                    report.append("👤 ").append(hoTen != null ? hoTen : "N/A").append(" (").append(maNV).append(")\n");
-                    report.append("   • Số ngày làm: ").append(stats.soNgayLam).append(" ngày\n");
-                    report.append("   • Tổng giờ làm: ").append(String.format("%.1f", stats.soGioLam)).append(" giờ\n");
-                    report.append("   • Giờ tăng ca: ").append(String.format("%.1f", stats.soGioTangCa)).append(" giờ\n");
-                    report.append("   • Lương cơ bản: ").append(formatCurrency(luongCoBan)).append("\n");
-                    report.append("   • Phụ cấp: ").append(formatCurrency(phuCap)).append("\n");
-                    report.append("   • Lương tăng ca: ").append(formatCurrency(luongTangCa)).append("\n");
-                    report.append("   • Tổng lương: ").append(formatCurrency(tongLuong)).append("\n");
-                    report.append("   • Trạng thái: ").append(trangThai).append("\n");
-                    report.append("───────────────────────────────────────\n");
+                    report.append(String.format("NHÂN VIÊN: %s (%s)\n", hoTen.toUpperCase(), maNV));
+                    report.append("---------------------------------------------\n");
+                    report.append(String.format(" Ngày làm : %-5d | Tổng giờ : %.1f\n", stats.soNgayLam, stats.soGioLam));
+                    report.append(String.format(" Tăng ca  : %-5.1f |\n", stats.soGioTangCa));
+                    report.append("---------------------------------------------\n");
+                    report.append(String.format(" Lương cơ bản  :%15s\n", formatCurrency(luongCoBan)));
+                    report.append(String.format(" Lương tăng ca :%15s\n", formatCurrency(luongTangCa)));
+                    report.append(String.format(" Phụ cấp       :%15s\n", formatCurrency(phuCap)));
+                    report.append("---------------------------------------------\n");
+                    report.append(String.format(" TỔNG NHẬN     :%15s\n", formatCurrency(tongLuong)));
+                    report.append(String.format(" TRẠNG THÁI    : %s\n", trangThai.toUpperCase()));
+                    report.append("=============================================\n\n");
                     
                     tongLuongCongTy += tongLuong;
                     soNhanVien++;
+                    if ("Đã thanh toán".equals(trangThai)) daThanhToan++;
+                    else chuaThanhToan++;
                     
                 } while (cursor.moveToNext());
                 cursor.close();
                 
                 // Thống kê tổng kết
-                report.append("\n📈 THỐNG KÊ TỔNG KẾT:\n");
-                report.append("   • Số nhân viên: ").append(soNhanVien).append("\n");
-                report.append("   • Tổng lương công ty: ").append(formatCurrency(tongLuongCongTy)).append("\n");
-                report.append("   • Lương trung bình: ").append(formatCurrency(tongLuongCongTy / soNhanVien)).append("\n");
+                report.append("TỔNG KẾT DOANH NGHIỆP\n");
+                report.append("---------------------------------------------\n");
+                report.append(String.format(" Tổng NV         : %d người\n", soNhanVien));
+                report.append(String.format(" Tổng chi lương  :%16s\n", formatCurrency(tongLuongCongTy)));
+                if (soNhanVien > 0) {
+                    report.append(String.format(" Lương trung bình:%16s\n", formatCurrency(tongLuongCongTy / soNhanVien)));
+                }
+                report.append(String.format(" Đã thanh toán   : %d/%d\n", daThanhToan, soNhanVien));
+                report.append(String.format(" Chưa thanh toán : %d/%d\n", chuaThanhToan, soNhanVien));
+                report.append("=============================================\n");
                 
             } else {
-                report.append("❌ Không có dữ liệu lương cho tháng này!\n");
+                report.append("Không có dữ liệu lương cho tháng này!\n");
                 report.append("Vui lòng tính lương trước khi xuất báo cáo.\n");
             }
             
         } catch (Exception e) {
-            report.append("❌ Lỗi khi tạo báo cáo: ").append(e.getMessage()).append("\n");
+            report.append("Lỗi khi tạo báo cáo: ").append(e.getMessage()).append("\n");
         }
         
-        report.append("\n📅 Báo cáo được tạo lúc: ").append(new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss", java.util.Locale.getDefault()).format(new java.util.Date()));
+        report.append("\nNgày xuất: ").append(new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault()).format(new java.util.Date()));
         
         // Hiển thị báo cáo trong dialog
         showReportDialog(report.toString(), thang, nam);
@@ -393,7 +403,7 @@ public class QuanLyLuongActivity extends AppCompatActivity {
     
     private void showReportDialog(String report, String thang, String nam) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("📊 Báo cáo lương " + thang + "/" + nam);
+        builder.setTitle("Báo cáo lương " + thang + "/" + nam);
         
         // Tạo ScrollView cho nội dung dài
         android.widget.ScrollView scrollView = new android.widget.ScrollView(this);
@@ -401,13 +411,15 @@ public class QuanLyLuongActivity extends AppCompatActivity {
         textView.setText(report);
         textView.setTextSize(12);
         textView.setTypeface(android.graphics.Typeface.MONOSPACE);
-        textView.setPadding(20, 20, 20, 20);
-        textView.setTextIsSelectable(true); // Cho phép copy text
+        textView.setPadding(24, 24, 24, 24);
+        textView.setTextIsSelectable(true);
+        textView.setLineSpacing(4, 1);
         
         scrollView.addView(textView);
         builder.setView(scrollView);
         
-        builder.setPositiveButton("📋 Copy", (dialog, which) -> {
+        // Nút Copy
+        builder.setPositiveButton("Copy", (dialog, which) -> {
             android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(android.content.Context.CLIPBOARD_SERVICE);
             android.content.ClipData clip = android.content.ClipData.newPlainText("Báo cáo lương", report);
             clipboard.setPrimaryClip(clip);
@@ -435,7 +447,9 @@ public class QuanLyLuongActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        loadSalaryByMonth();
+        if (!isInitialLoad) {
+            loadSalaryByMonth();
+        }
     }
     
     private double getLuongCoBanGocByMaNV(String maNhanVien) {

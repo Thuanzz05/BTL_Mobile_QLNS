@@ -26,15 +26,43 @@
             android:gravity="center"
             android:layout_marginBottom="8dp" />
 
-        <TextView
-            android:id="@+id/tv_thang_thong_ke"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Thống kê tháng: 04/2026"
-            android:textSize="16sp"
-            android:textColor="@android:color/white"
-            android:gravity="center"
-            android:alpha="0.9" />
+            android:layout_gravity="center"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tháng: "
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+
+            <Spinner
+                android:id="@+id/sp_thang_thong_ke"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:backgroundTint="@android:color/white" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Năm: "
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:layout_marginStart="16dp" />
+
+            <Spinner
+                android:id="@+id/sp_nam_thong_ke"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:backgroundTint="@android:color/white" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -293,64 +321,27 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:background="#E0F2F1"
+                        android:padding="16dp">
 
-                        <LinearLayout
-                            android:layout_width="0dp"
+                        <TextView
+                            android:id="@+id/tv_tong_cham_cong_thang_nay"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:background="#E0F2F1"
-                            android:padding="16dp"
-                            android:layout_marginEnd="8dp">
+                            android:text="0"
+                            android:textSize="32sp"
+                            android:textStyle="bold"
+                            android:textColor="#00ACC1" />
 
-                            <TextView
-                                android:id="@+id/tv_tong_cham_cong_thang_nay"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0"
-                                android:textSize="32sp"
-                                android:textStyle="bold"
-                                android:textColor="#00ACC1" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Lần chấm công"
-                                android:textSize="14sp"
-                                android:textColor="#666"
-                                android:gravity="center" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:background="#E8F5E8"
-                            android:padding="16dp"
-                            android:layout_marginStart="8dp">
-
-                            <TextView
-                                android:id="@+id/tv_ty_le_di_lam"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0%"
-                                android:textSize="32sp"
-                                android:textStyle="bold"
-                                android:textColor="#388E3C" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Tỷ lệ đi làm"
-                                android:textSize="14sp"
-                                android:textColor="#666" />
-
-                        </LinearLayout>
+                            android:text="Lần chấm công"
+                            android:textSize="14sp"
+                            android:textColor="#666"
+                            android:gravity="center" />
 
                     </LinearLayout>
 

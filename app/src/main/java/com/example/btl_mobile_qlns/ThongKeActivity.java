@@ -2,11 +2,16 @@ package com.example.btl_mobile_qlns;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.btl_mobile_qlns.database.DatabaseHelper;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 public class ThongKeActivity extends AppCompatActivity {
@@ -14,22 +19,24 @@ public class ThongKeActivity extends AppCompatActivity {
     private TextView tvTitle;
     private TextView tvTongNhanVien, tvNhanVienDangLam, tvNhanVienNghiViec;
     private TextView tvTongPhongBan, tvTongChucVu;
-    private TextView tvTongChamCongThangNay, tvTyLeDiLam;
+    private TextView tvTongChamCongThangNay;
     private TextView tvTongDonNghiPhep, tvDonChoDuyet, tvDonDaDuyet;
     private TextView tvTongLuongThangNay, tvLuongTrungBinh;
-    private TextView tvThangThongKe;
+    private Spinner spThang, spNam;
+    private boolean isInitialLoad = true;
     
     private DatabaseHelper dbHelper;
     private String currentRole;
     private String currentUsername;
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thong_ke);
         
         initViews();
         setupDatabase();
+        setupSpinners();
+        isInitialLoad = false;
         loadStatistics();
     }
     
@@ -47,7 +54,6 @@ public class ThongKeActivity extends AppCompatActivity {
         
         // Thống kê chấm công
         tvTongChamCongThangNay = findViewById(R.id.tv_tong_cham_cong_thang_nay);
-        tvTyLeDiLam = findViewById(R.id.tv_ty_le_di_lam);
         
         // Thống kê nghỉ phép
         tvTongDonNghiPhep = findViewById(R.id.tv_tong_don_nghi_phep);
@@ -58,7 +64,8 @@ public class ThongKeActivity extends AppCompatActivity {
         tvTongLuongThangNay = findViewById(R.id.tv_tong_luong_thang_nay);
         tvLuongTrungBinh = findViewById(R.id.tv_luong_trung_binh);
         
-        tvThangThongKe = findViewById(R.id.tv_thang_thong_ke);
+        spThang = findViewById(R.id.sp_thang_thong_ke);
+        spNam = findViewById(R.id.sp_nam_thong_ke);
     }
     
     private void setupDatabase() {
@@ -67,11 +74,49 @@ public class ThongKeActivity extends AppCompatActivity {
         currentUsername = getIntent().getStringExtra("username");
         
         tvTitle.setText("THỐNG KÊ TỔNG QUAN");
+    }
+    
+    private void setupSpinners() {
+        List<String> listThang = new ArrayList<>();
+        for (int i = 1; i <= 12; i++) {
+            listThang.add(String.format(Locale.getDefault(), "%02d", i));
+        }
+        ArrayAdapter<String> thangAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, listThang);
+        thangAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spThang.setAdapter(thangAdapter);
         
-        // Hiển thị tháng thống kê
-        Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/yyyy", Locale.getDefault());
-        tvThangThongKe.setText("Thống kê tháng: " + sdf.format(calendar.getTime()));
+        List<String> listNam = new ArrayList<>();
+        for (int i = 2020; i <= 2030; i++) {
+            listNam.add(String.valueOf(i));
+        }
+        ArrayAdapter<String> namAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, listNam);
+        namAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spNam.setAdapter(namAdapter);
+        
+        Calendar cal = Calendar.getInstance();
+        int currentMonth = cal.get(Calendar.MONTH); 
+        int currentYear = cal.get(Calendar.YEAR);
+        
+        spThang.setSelection(currentMonth);
+        int yearPosition = listNam.indexOf(String.valueOf(currentYear));
+        if (yearPosition >= 0) {
+            spNam.setSelection(yearPosition);
+        }
+        
+        AdapterView.OnItemSelectedListener listener = new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (!isInitialLoad) {
+                    loadStatistics();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        };
+        
+        spThang.setOnItemSelectedListener(listener);
+        spNam.setOnItemSelectedListener(listener);
     }
     
     private void loadStatistics() {
@@ -144,10 +189,9 @@ public class ThongKeActivity extends AppCompatActivity {
     
     private void loadAttendanceStatistics() {
         try {
-            Calendar calendar = Calendar.getInstance();
-            String thangNam = String.format("%04d-%02d", 
-                calendar.get(Calendar.YEAR), 
-                calendar.get(Calendar.MONTH) + 1);
+            String selectedMonth = spThang.getSelectedItem().toString();
+            String selectedYear = spNam.getSelectedItem().toString();
+            String thangNam = selectedYear + "-" + selectedMonth;
             
             // Tổng số lần chấm công tháng này
             Cursor cursor = dbHelper.getReadableDatabase().rawQuery(
@@ -160,15 +204,7 @@ public class ThongKeActivity extends AppCompatActivity {
             }
             
             // Tính tỷ lệ đi làm (số ngày có chấm công / tổng số ngày làm việc dự kiến)
-            int soNhanVienDangLam = Integer.parseInt(tvNhanVienDangLam.getText().toString());
-            int soNgayLamViecTrongThang = getWorkingDaysInMonth();
-            int tongNgayLamViecDuKien = soNhanVienDangLam * soNgayLamViecTrongThang;
-            
-            double tyLeDiLam = tongNgayLamViecDuKien > 0 ? 
-                (double) tongChamCong / tongNgayLamViecDuKien * 100 : 0;
-            
             tvTongChamCongThangNay.setText(String.valueOf(tongChamCong));
-            tvTyLeDiLam.setText(String.format("%.1f%%", tyLeDiLam));
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -177,9 +213,13 @@ public class ThongKeActivity extends AppCompatActivity {
     
     private void loadLeaveStatistics() {
         try {
+            String selectedMonth = spThang.getSelectedItem().toString();
+            String selectedYear = spNam.getSelectedItem().toString();
+            String thangNam = selectedYear + "-" + selectedMonth;
+            
             // Tổng số đơn nghỉ phép
             Cursor cursor = dbHelper.getReadableDatabase().rawQuery(
-                "SELECT COUNT(*) FROM NghiPhep", null);
+                "SELECT COUNT(*) FROM NghiPhep WHERE strftime('%Y-%m', NgayBatDau) = ?", new String[]{thangNam});
             int tongDonNghiPhep = 0;
             if (cursor != null && cursor.moveToFirst()) {
                 tongDonNghiPhep = cursor.getInt(0);
@@ -188,7 +228,7 @@ public class ThongKeActivity extends AppCompatActivity {
             
             // Đơn chờ duyệt
             cursor = dbHelper.getReadableDatabase().rawQuery(
-                "SELECT COUNT(*) FROM NghiPhep WHERE TrangThai = 'Chờ duyệt'", null);
+                "SELECT COUNT(*) FROM NghiPhep WHERE TrangThai = 'Chờ duyệt' AND strftime('%Y-%m', NgayBatDau) = ?", new String[]{thangNam});
             int donChoDuyet = 0;
             if (cursor != null && cursor.moveToFirst()) {
                 donChoDuyet = cursor.getInt(0);
@@ -197,7 +237,7 @@ public class ThongKeActivity extends AppCompatActivity {
             
             // Đơn đã duyệt
             cursor = dbHelper.getReadableDatabase().rawQuery(
-                "SELECT COUNT(*) FROM NghiPhep WHERE TrangThai = 'Đã duyệt'", null);
+                "SELECT COUNT(*) FROM NghiPhep WHERE TrangThai = 'Đã duyệt' AND strftime('%Y-%m', NgayBatDau) = ?", new String[]{thangNam});
             int donDaDuyet = 0;
             if (cursor != null && cursor.moveToFirst()) {
                 donDaDuyet = cursor.getInt(0);
@@ -215,10 +255,9 @@ public class ThongKeActivity extends AppCompatActivity {
     
     private void loadSalaryStatistics() {
         try {
-            Calendar calendar = Calendar.getInstance();
-            String thangNam = String.format("%04d-%02d", 
-                calendar.get(Calendar.YEAR), 
-                calendar.get(Calendar.MONTH) + 1);
+            String selectedMonth = spThang.getSelectedItem().toString();
+            String selectedYear = spNam.getSelectedItem().toString();
+            String thangNam = selectedYear + "-" + selectedMonth;
             
             // Tổng lương tháng này
             Cursor cursor = dbHelper.getReadableDatabase().rawQuery(
@@ -241,27 +280,6 @@ public class ThongKeActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-    
-    private int getWorkingDaysInMonth() {
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        
-        calendar.set(year, month, 1);
-        int daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-        
-        int workingDays = 0;
-        for (int day = 1; day <= daysInMonth; day++) {
-            calendar.set(year, month, day);
-            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-            // Không tính thứ 7 và chủ nhật
-            if (dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY) {
-                workingDays++;
-            }
-        }
-        
-        return workingDays;
     }
     
     private String formatCurrency(double amount) {
