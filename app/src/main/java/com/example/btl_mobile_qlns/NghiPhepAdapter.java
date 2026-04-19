@@ -7,8 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
 
 import com.example.btl_mobile_qlns.database.DatabaseHelper;
 
@@ -59,6 +61,8 @@ public class NghiPhepAdapter extends BaseAdapter {
             TextView tvTrangThai = convertView.findViewById(R.id.tv_trang_thai);
             Button btnDuyet = convertView.findViewById(R.id.btn_duyet);
             Button btnTuChoi = convertView.findViewById(R.id.btn_tu_choi);
+            ImageButton btnSua = convertView.findViewById(R.id.btn_sua_np);
+            ImageButton btnXoa = convertView.findViewById(R.id.btn_xoa_np);
             
             int maNghiPhep = cursor.getInt(cursor.getColumnIndexOrThrow("MaNghiPhep"));
             String maNhanVien = cursor.getString(cursor.getColumnIndexOrThrow("MaNhanVien"));
@@ -100,35 +104,65 @@ public class NghiPhepAdapter extends BaseAdapter {
                     break;
             }
             
-            // Hiển thị nút duyệt/từ chối cho Admin/HR/Manager và chỉ với đơn "Chờ duyệt"
-            if (("Admin".equals(currentRole) || "HR".equals(currentRole) || "Manager".equals(currentRole)) 
-                && "Chờ duyệt".equals(trangThai)) {
-                btnDuyet.setVisibility(View.VISIBLE);
-                btnTuChoi.setVisibility(View.VISIBLE);
-                
-                btnDuyet.setOnClickListener(v -> {
-                    boolean success = dbHelper.approveLeaveRequest(maNghiPhep, "Đã duyệt");
-                    if (success) {
-                        Toast.makeText(context, "Đã duyệt đơn nghỉ phép", Toast.LENGTH_SHORT).show();
-                        refreshData();
-                    } else {
-                        Toast.makeText(context, "Lỗi khi duyệt đơn", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                
-                btnTuChoi.setOnClickListener(v -> {
-                    boolean success = dbHelper.approveLeaveRequest(maNghiPhep, "Từ chối");
-                    if (success) {
-                        Toast.makeText(context, "Đã từ chối đơn nghỉ phép", Toast.LENGTH_SHORT).show();
-                        refreshData();
-                    } else {
-                        Toast.makeText(context, "Lỗi khi từ chối đơn", Toast.LENGTH_SHORT).show();
-                    }
-                });
+            // Logic cho các nút bấm
+            if ("Chờ duyệt".equals(trangThai)) {
+                // Sửa/Xóa đơn cho nhân viên (chính chủ) hoặc Admin
+                btnSua.setVisibility(View.VISIBLE);
+                btnXoa.setVisibility(View.VISIBLE);
+
+                // Duyệt/Từ chối cho Quản lý
+                if ("Admin".equals(currentRole) || "HR".equals(currentRole) || "Manager".equals(currentRole)) {
+                    btnDuyet.setVisibility(View.VISIBLE);
+                    btnTuChoi.setVisibility(View.VISIBLE);
+                } else {
+                    btnDuyet.setVisibility(View.GONE);
+                    btnTuChoi.setVisibility(View.GONE);
+                }
             } else {
+                btnSua.setVisibility(View.GONE);
+                btnXoa.setVisibility(View.GONE);
                 btnDuyet.setVisibility(View.GONE);
                 btnTuChoi.setVisibility(View.GONE);
             }
+
+            // Sự kiện Xóa
+            btnXoa.setOnClickListener(v -> {
+                new AlertDialog.Builder(context)
+                    .setTitle("Xác nhận hủy đơn")
+                    .setMessage("Bạn có chắc chắn muốn hủy đơn nghỉ phép này?")
+                    .setPositiveButton("Hủy đơn", (dialog, which) -> {
+                        if (dbHelper.deleteLeaveRequest(maNghiPhep)) {
+                            Toast.makeText(context, "Đã hủy đơn thành công", Toast.LENGTH_SHORT).show();
+                            refreshData();
+                        }
+                    })
+                    .setNegativeButton("Quay lại", null)
+                    .show();
+            });
+
+            // Sự kiện Sửa (Mở Dialog nhập lại lý do)
+            btnSua.setOnClickListener(v -> {
+                if (context instanceof NghiPhepActivity) {
+                    ((NghiPhepActivity) context).showEditLeaveDialog(maNghiPhep, ngayBatDau, ngayKetThuc, soNgayNghi, lyDo);
+                }
+            });
+
+            // Sự kiện Duyệt/Từ chối
+            btnDuyet.setOnClickListener(v -> {
+                boolean success = dbHelper.approveLeaveRequest(maNghiPhep, "Đã duyệt");
+                if (success) {
+                    Toast.makeText(context, "Đã duyệt đơn nghỉ phép", Toast.LENGTH_SHORT).show();
+                    refreshData();
+                }
+            });
+
+            btnTuChoi.setOnClickListener(v -> {
+                boolean success = dbHelper.approveLeaveRequest(maNghiPhep, "Từ chối");
+                if (success) {
+                    Toast.makeText(context, "Đã từ chối đơn nghỉ phép", Toast.LENGTH_SHORT).show();
+                    refreshData();
+                }
+            });
         }
         
         return convertView;
@@ -136,7 +170,7 @@ public class NghiPhepAdapter extends BaseAdapter {
     
     private void refreshData() {
         if (context instanceof NghiPhepActivity) {
-            ((NghiPhepActivity) context).onResume();
+            ((NghiPhepActivity) context).refreshHistory();
         }
     }
     

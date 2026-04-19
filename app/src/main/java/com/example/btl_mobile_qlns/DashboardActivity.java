@@ -18,8 +18,8 @@ import com.example.btl_mobile_qlns.database.DatabaseHelper;
 public class DashboardActivity extends AppCompatActivity {
 
     private TextView tvWelcome;
-    private Button btnQuanLyNV, btnQuanLyPB, btnQuanLyCV, btnChamCong, btnNghiPhep, btnLuong, btnThongKe, btnThongTin, btnDangXuat, btnQuanLyHD;
-    private androidx.cardview.widget.CardView cardQuanLyNV, cardQuanLyPB, cardQuanLyCV, cardLuong, cardThongKe, cardQuanLyHD;
+    private Button btnQuanLyNV, btnQuanLyPB, btnQuanLyCV, btnChamCong, btnNghiPhep, btnLuong, btnThongKe, btnThongTin, btnDangXuat, btnQuanLyHD, btnQuanLyTK;
+    private androidx.cardview.widget.CardView cardQuanLyNV, cardQuanLyPB, cardQuanLyCV, cardLuong, cardThongKe, cardQuanLyHD, cardQuanLyTK;
     
     private DatabaseHelper dbHelper;
     private String currentUsername;
@@ -64,6 +64,8 @@ public class DashboardActivity extends AppCompatActivity {
         cardThongKe = findViewById(R.id.card_thong_ke);
         cardQuanLyHD = findViewById(R.id.card_quan_ly_hd);
         btnQuanLyHD = findViewById(R.id.btn_quan_ly_hd);
+        cardQuanLyTK = findViewById(R.id.card_quan_ly_tk);
+        btnQuanLyTK = findViewById(R.id.btn_quan_ly_tk);
     }
     
     private void setupDatabase() {
@@ -97,18 +99,20 @@ public class DashboardActivity extends AppCompatActivity {
         cardLuong.setVisibility(android.view.View.GONE);
         cardThongKe.setVisibility(android.view.View.GONE);
         cardQuanLyHD.setVisibility(android.view.View.GONE);
+        cardQuanLyTK.setVisibility(android.view.View.GONE);
         
         // Admin: Full quyền tất cả chức năng
-        if ("Admin".equals(currentRole)) {
+        if ("Admin".equalsIgnoreCase(currentRole)) {
             cardQuanLyNV.setVisibility(android.view.View.VISIBLE);
             cardQuanLyPB.setVisibility(android.view.View.VISIBLE);
             cardQuanLyCV.setVisibility(android.view.View.VISIBLE);
             cardLuong.setVisibility(android.view.View.VISIBLE);
             cardThongKe.setVisibility(android.view.View.VISIBLE);
             cardQuanLyHD.setVisibility(android.view.View.VISIBLE);
+            cardQuanLyTK.setVisibility(android.view.View.VISIBLE);
         }
         // HR: Chuyên về nhân sự - quản lý nhân viên, lương, nghỉ phép
-        else if ("HR".equals(currentRole)) {
+        else if ("HR".equalsIgnoreCase(currentRole)) {
             cardQuanLyNV.setVisibility(android.view.View.VISIBLE);
             cardQuanLyPB.setVisibility(android.view.View.VISIBLE);
             cardQuanLyCV.setVisibility(android.view.View.VISIBLE);
@@ -117,13 +121,13 @@ public class DashboardActivity extends AppCompatActivity {
             cardQuanLyHD.setVisibility(android.view.View.VISIBLE);
         }
         // Manager: Quản lý cấp trung - quản lý nhân viên, xem lương
-        else if ("Manager".equals(currentRole)) {
+        else if ("Manager".equalsIgnoreCase(currentRole)) {
             cardQuanLyNV.setVisibility(android.view.View.VISIBLE);
             cardLuong.setVisibility(android.view.View.VISIBLE);
             cardThongKe.setVisibility(android.view.View.VISIBLE);
         }
         // Employee: Chấm công, nghỉ phép, xem lương cá nhân, thông tin cá nhân
-        else if ("Employee".equals(currentRole)) {
+        else if ("Employee".equalsIgnoreCase(currentRole)) {
             cardLuong.setVisibility(android.view.View.VISIBLE);
             btnLuong.setText("XEM LƯƠNG CÁ NHÂN");
         }
@@ -146,7 +150,7 @@ public class DashboardActivity extends AppCompatActivity {
         });
         
         btnQuanLyPB.setOnClickListener(v -> {
-            if ("Admin".equals(currentRole) || "HR".equals(currentRole)) {
+            if ("Admin".equalsIgnoreCase(currentRole) || "HR".equalsIgnoreCase(currentRole)) {
                 Intent intent = new Intent(DashboardActivity.this, QuanLyPhongBanActivity.class);
                 intent.putExtra("role", currentRole);
                 startActivity(intent);
@@ -156,7 +160,7 @@ public class DashboardActivity extends AppCompatActivity {
         });
         
         btnQuanLyCV.setOnClickListener(v -> {
-            if ("Admin".equals(currentRole) || "HR".equals(currentRole)) {
+            if ("Admin".equalsIgnoreCase(currentRole) || "HR".equalsIgnoreCase(currentRole)) {
                 Intent intent = new Intent(DashboardActivity.this, QuanLyChucVuActivity.class);
                 intent.putExtra("role", currentRole);
                 startActivity(intent);
@@ -187,7 +191,7 @@ public class DashboardActivity extends AppCompatActivity {
         });
         
         btnThongKe.setOnClickListener(v -> {
-            if ("Admin".equals(currentRole) || "HR".equals(currentRole) || "Manager".equals(currentRole)) {
+            if ("Admin".equalsIgnoreCase(currentRole) || "HR".equalsIgnoreCase(currentRole) || "Manager".equalsIgnoreCase(currentRole)) {
                 Intent intent = new Intent(DashboardActivity.this, ThongKeActivity.class);
                 intent.putExtra("username", currentUsername);
                 intent.putExtra("role", currentRole);
@@ -204,8 +208,17 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
         btnQuanLyHD.setOnClickListener(v -> {
-            if ("Admin".equals(currentRole) || "HR".equals(currentRole)) {
+            if ("Admin".equalsIgnoreCase(currentRole) || "HR".equalsIgnoreCase(currentRole)) {
                 Intent intent = new Intent(DashboardActivity.this, QuanLyHopDongActivity.class);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "Bạn không có quyền truy cập chức năng này", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnQuanLyTK.setOnClickListener(v -> {
+            if ("Admin".equalsIgnoreCase(currentRole)) {
+                Intent intent = new Intent(DashboardActivity.this, QuanLyTaiKhoanActivity.class);
                 startActivity(intent);
             } else {
                 Toast.makeText(this, "Bạn không có quyền truy cập chức năng này", Toast.LENGTH_SHORT).show();
@@ -221,6 +234,6 @@ public class DashboardActivity extends AppCompatActivity {
     }
     
     private boolean isAdminOrHR() {
-        return "Admin".equals(currentRole) || "HR".equals(currentRole) || "Manager".equals(currentRole);
+        return "Admin".equalsIgnoreCase(currentRole) || "HR".equalsIgnoreCase(currentRole) || "Manager".equalsIgnoreCase(currentRole);
     }
 }

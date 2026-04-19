@@ -63,8 +63,9 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@android:drawable/ic_menu_delete"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:tint="#F44336" />
+            android:background="@drawable/btn_danger"
+            app:tint="@android:color/white"
+            android:padding="8dp" />
 
     </LinearLayout>
 
