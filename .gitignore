@@ -121,8 +121,6 @@ data/*.db
 reports/*.png
 reports/*.pdf
 reports/*.docx
-slides/*.pptx
-slides/*.pdf
 
 # Logs
 *.log
