@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="3dp"
+    android:layout_margin="4dp"
+    android:descendantFocusability="blocksDescendants">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:id="@+id/tv_ma_hd"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Mã HD: HD001"
+                android:textStyle="bold"
+                android:textColor="#2196F3"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_trang_thai"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hiệu lực"
+                android:background="@drawable/status_background"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_ten_nv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nhân viên: Nguyễn Văn A"
+            android:textColor="#333"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/tv_loai_hd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Loại: Không thời hạn"
+            android:textColor="#666" />
+
+        <TextView
+            android:id="@+id/tv_thoi_gian"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Từ 01/01/2024 - Không xác định"
+            android:textColor="#666" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#eee"
+            android:layout_marginVertical="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="bottom">
+
+            <TextView
+                android:id="@+id/tv_muc_luong"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Mức lương: 10,000,000 VNĐ"
+                android:textColor="#E91E63"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/btn_delete_hd"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="@drawable/btn_danger"
+                android:src="@android:drawable/ic_menu_delete"
+                app:tint="@android:color/white"
+                android:padding="8dp"
+                android:focusable="false"
+                android:focusableInTouchMode="false" />
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

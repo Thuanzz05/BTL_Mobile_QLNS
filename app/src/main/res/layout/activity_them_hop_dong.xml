@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f5f5f5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="THÊM HỢP ĐỒNG MỚI"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#2196F3"
+            android:gravity="center"
+            android:layout_marginBottom="30dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mã hợp đồng"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/et_ma_hd"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Nhập mã hợp đồng (ví dụ: HD001)"
+            android:background="@drawable/edit_text_background"
+            android:padding="10dp"
+            android:layout_marginBottom="15dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chọn nhân viên"
+            android:textStyle="bold" />
+        <Spinner
+            android:id="@+id/sp_nhan_vien"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/edit_text_background"
+            android:layout_marginBottom="15dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Loại hợp đồng"
+            android:textStyle="bold" />
+        <Spinner
+            android:id="@+id/sp_loai_hd"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/edit_text_background"
+            android:layout_marginBottom="15dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ngày bắt đầu"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/et_ngay_bd"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Chọn ngày bắt đầu"
+            android:focusable="false"
+            android:background="@drawable/edit_text_background"
+            android:padding="10dp"
+            android:layout_marginBottom="15dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ngày kết thúc (nếu có)"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/et_ngay_kt"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Chọn ngày kết thúc"
+            android:focusable="false"
+            android:background="@drawable/edit_text_background"
+            android:padding="10dp"
+            android:layout_marginBottom="15dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mức lương thỏa thuận"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/et_muc_luong"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Nhập mức lương (ví dụ: 10000000)"
+            android:inputType="number"
+            android:background="@drawable/edit_text_background"
+            android:padding="10dp"
+            android:layout_marginBottom="30dp" />
+
+        <Button
+            android:id="@+id/btn_save_hd"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="LƯU HỢP ĐỒNG"
+            android:backgroundTint="#2196F3"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="HỦY"
+            android:backgroundTint="#f44336"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp" />
+
+    </LinearLayout>
+</ScrollView>

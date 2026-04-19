@@ -80,6 +80,18 @@
             android:name=".ThongKeActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".QuanLyHopDongActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ThemHopDongActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".QuanLyTaiKhoanActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

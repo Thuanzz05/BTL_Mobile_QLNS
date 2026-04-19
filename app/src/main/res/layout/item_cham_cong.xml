@@ -117,24 +117,22 @@
 
         <Button
             android:id="@+id/btn_xoa"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
+            android:layout_width="90dp"
+            android:layout_height="40dp"
             android:text="XÓA"
             android:textSize="12sp"
-            android:textColor="@android:color/holo_red_dark"
-            android:background="@drawable/btn_secondary"
-            android:layout_marginEnd="8dp"
-            android:minWidth="60dp" />
+            android:textColor="@android:color/white"
+            android:backgroundTint="#F44336"
+            android:layout_marginEnd="8dp" />
 
         <Button
             android:id="@+id/btn_sua"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
+            android:layout_width="90dp"
+            android:layout_height="40dp"
             android:text="SỬA"
             android:textSize="12sp"
             android:textColor="@android:color/white"
-            android:background="@drawable/btn_primary"
-            android:minWidth="60dp" />
+            android:backgroundTint="#2196F3" />
 
     </LinearLayout>
 
