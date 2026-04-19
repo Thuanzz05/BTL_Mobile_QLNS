@@ -142,7 +142,7 @@ public class TaiKhoanAdapter extends BaseAdapter {
         layout.addView(etFullName);
 
         EditText etRole = new EditText(context);
-        etRole.setHint("Vai trò (admin/manager/user)");
+        etRole.setHint("Vai trò (Admin/HR/Manager/Employee)");
         etRole.setText(currentRole);
         layout.addView(etRole);
 
@@ -151,6 +151,11 @@ public class TaiKhoanAdapter extends BaseAdapter {
         builder.setPositiveButton("Cập nhật", (dialog, which) -> {
             String newName = etFullName.getText().toString().trim();
             String newRole = etRole.getText().toString().trim();
+
+            // Thống nhất user thành Employee
+            if (newRole.equalsIgnoreCase("user")) {
+                newRole = "Employee";
+            }
 
             if (newName.isEmpty() || newRole.isEmpty()) {
                 Toast.makeText(context, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
