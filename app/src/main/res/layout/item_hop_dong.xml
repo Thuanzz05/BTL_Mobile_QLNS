@@ -91,9 +91,10 @@
                 android:id="@+id/btn_delete_hd"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:background="@drawable/btn_danger"
                 android:src="@android:drawable/ic_menu_delete"
-                app:tint="#f44336"
+                app:tint="@android:color/white"
+                android:padding="8dp"
                 android:focusable="false"
                 android:focusableInTouchMode="false" />
         </LinearLayout>

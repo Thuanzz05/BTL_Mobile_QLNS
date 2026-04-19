@@ -6,6 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,7 +58,8 @@ public class TaiKhoanAdapter extends BaseAdapter {
         TextView tvFullName = convertView.findViewById(R.id.tv_full_name);
         TextView tvRole = convertView.findViewById(R.id.tv_role);
         TextView tvStatus = convertView.findViewById(R.id.tv_status);
-        ImageButton btnDelete = convertView.findViewById(R.id.btn_delete_account);
+        Button btnDelete = convertView.findViewById(R.id.btn_delete_account);
+        Button btnEdit = convertView.findViewById(R.id.btn_edit_account);
 
         String username = cursor.getString(cursor.getColumnIndexOrThrow("TenDangNhap"));
         String fullName = cursor.getString(cursor.getColumnIndexOrThrow("HoTen"));
@@ -76,8 +80,10 @@ public class TaiKhoanAdapter extends BaseAdapter {
 
         if ("admin".equals(username.toLowerCase())) {
             btnDelete.setVisibility(View.GONE);
+            btnEdit.setVisibility(View.GONE);
         } else {
             btnDelete.setVisibility(View.VISIBLE);
+            btnEdit.setVisibility(View.VISIBLE);
         }
 
         btnDelete.setOnClickListener(v -> {
@@ -87,16 +93,18 @@ public class TaiKhoanAdapter extends BaseAdapter {
                 .setPositiveButton("Xóa", (dialog, which) -> {
                     if (dbHelper.deleteAccount(username)) {
                         Toast.makeText(context, "Đã xóa tài khoản", Toast.LENGTH_SHORT).show();
-                        // Refresh data
-                        if (context instanceof QuanLyTaiKhoanActivity) {
-                            ((QuanLyTaiKhoanActivity) context).loadAccounts();
-                        }
+                        refreshData();
                     } else {
                         Toast.makeText(context, "Lỗi khi xóa tài khoản", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .setNegativeButton("Hủy", null)
                 .show();
+        });
+
+        // Sự kiện Sửa tài khoản
+        btnEdit.setOnClickListener(v -> {
+            showEditAccountDialog(username, fullName, role);
         });
 
         convertView.setOnClickListener(v -> {
@@ -118,6 +126,53 @@ public class TaiKhoanAdapter extends BaseAdapter {
         });
 
         return convertView;
+    }
+
+    private void showEditAccountDialog(String username, String currentName, String currentRole) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Sửa tài khoản: " + username);
+
+        LinearLayout layout = new LinearLayout(context);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(50, 40, 50, 10);
+
+        EditText etFullName = new EditText(context);
+        etFullName.setHint("Họ tên");
+        etFullName.setText(currentName);
+        layout.addView(etFullName);
+
+        EditText etRole = new EditText(context);
+        etRole.setHint("Vai trò (admin/manager/user)");
+        etRole.setText(currentRole);
+        layout.addView(etRole);
+
+        builder.setView(layout);
+
+        builder.setPositiveButton("Cập nhật", (dialog, which) -> {
+            String newName = etFullName.getText().toString().trim();
+            String newRole = etRole.getText().toString().trim();
+
+            if (newName.isEmpty() || newRole.isEmpty()) {
+                Toast.makeText(context, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (dbHelper.updateAccountInfo(username, newName, newRole)) {
+                Toast.makeText(context, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
+                refreshData();
+            } else {
+                Toast.makeText(context, "Cập nhật thất bại", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Hủy", null);
+        builder.show();
+    }
+
+    private void refreshData() {
+        if (context instanceof QuanLyTaiKhoanActivity) {
+            ((QuanLyTaiKhoanActivity) context).loadAccounts();
+        }
     }
 
     public void swapCursor(Cursor newCursor) {

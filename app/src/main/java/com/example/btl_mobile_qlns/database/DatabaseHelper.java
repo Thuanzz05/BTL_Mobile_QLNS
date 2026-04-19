@@ -866,6 +866,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return updateLeaveRequestStatus(maNghiPhep, trangThai, "Admin");
     }
 
+    public boolean updateLeaveRequest(int maNghiPhep, String ngayBatDau, String ngayKetThuc, int soNgayNghi, String lyDo) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("NgayBatDau", ngayBatDau);
+        values.put("NgayKetThuc", ngayKetThuc);
+        values.put("SoNgayNghi", soNgayNghi);
+        values.put("LyDo", lyDo);
+        int result = db.update(TABLE_NGHI_PHEP, values, "MaNghiPhep = ?", new String[]{String.valueOf(maNghiPhep)});
+        return result > 0;
+    }
+
+    public boolean deleteLeaveRequest(int maNghiPhep) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int result = db.delete(TABLE_NGHI_PHEP, "MaNghiPhep = ?", new String[]{String.valueOf(maNghiPhep)});
+        return result > 0;
+    }
+
     // Methods cho thông tin cá nhân
     public Cursor getEmployeeByMa(String maNhanVien) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -1333,5 +1350,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("TrangThai", status);
         int result = db.update(TABLE_TAI_KHOAN, values, "TenDangNhap = ?", new String[]{username});
         return result > 0;
+    }
+
+    public boolean updateAccountInfo(String username, String fullName, String role) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            // 1. Cập nhật VaiTro trong bảng TaiKhoan
+            ContentValues accountValues = new ContentValues();
+            accountValues.put("VaiTro", role);
+            db.update(TABLE_TAI_KHOAN, accountValues, "TenDangNhap = ?", new String[]{username});
+
+            // 2. Tìm MaNhanVien liên kết với tài khoản này
+            String maNV = "";
+            Cursor cursor = db.rawQuery("SELECT MaNhanVien FROM " + TABLE_TAI_KHOAN + " WHERE TenDangNhap = ?", new String[]{username});
+            if (cursor.moveToFirst()) {
+                maNV = cursor.getString(0);
+            }
+            cursor.close();
+
+            // 3. Cập nhật HoTen trong bảng NhanVien
+            if (!maNV.isEmpty()) {
+                ContentValues employeeValues = new ContentValues();
+                employeeValues.put("HoTen", fullName);
+                db.update(TABLE_NHAN_VIEN, employeeValues, "MaNhanVien = ?", new String[]{maNV});
+            }
+
+            db.setTransactionSuccessful();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            db.endTransaction();
+        }
     }
 }

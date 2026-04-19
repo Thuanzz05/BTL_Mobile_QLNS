@@ -221,4 +221,46 @@ public class NghiPhepActivity extends AppCompatActivity {
         super.onResume();
         loadLeaveHistory();
     }
+
+    public void refreshHistory() {
+        loadLeaveHistory();
+    }
+
+    public void showEditLeaveDialog(int maNghiPhep, String currentStart, String currentEnd, int currentDays, String currentReason) {
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        android.view.View view = getLayoutInflater().inflate(R.layout.dialog_edit_nghi_phep, null);
+        
+        EditText etStart = view.findViewById(R.id.et_edit_start);
+        EditText etEnd = view.findViewById(R.id.et_edit_end);
+        EditText etReason = view.findViewById(R.id.et_edit_ly_do);
+        TextView tvDays = view.findViewById(R.id.tv_edit_so_ngay);
+        
+        etStart.setText(currentStart);
+        etEnd.setText(currentEnd);
+        etReason.setText(currentReason);
+        tvDays.setText("Số ngày: " + currentDays);
+        
+        etStart.setOnClickListener(v -> showDatePicker(etStart));
+        etEnd.setOnClickListener(v -> showDatePicker(etEnd));
+        
+        builder.setView(view)
+            .setTitle("Sửa đơn nghỉ phép")
+            .setPositiveButton("Cập nhật", (dialog, which) -> {
+                String newStart = etStart.getText().toString();
+                String newEnd = etEnd.getText().toString();
+                String newReason = etReason.getText().toString();
+                int newDays = calculateDaysBetween(newStart, newEnd);
+                
+                if (newDays > 0 && !newReason.isEmpty()) {
+                    if (dbHelper.updateLeaveRequest(maNghiPhep, newStart, newEnd, newDays, newReason)) {
+                        Toast.makeText(this, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
+                        loadLeaveHistory();
+                    }
+                } else {
+                    Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+                }
+            })
+            .setNegativeButton("Hủy", null)
+            .show();
+    }
 }

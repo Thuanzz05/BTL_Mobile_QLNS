@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ngày bắt đầu"
+        android:textStyle="bold" />
+    <EditText
+        android:id="@+id/et_edit_start"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:hint="Chọn ngày" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ngày kết thúc"
+        android:layout_marginTop="10dp"
+        android:textStyle="bold" />
+    <EditText
+        android:id="@+id/et_edit_end"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:hint="Chọn ngày" />
+
+    <TextView
+        android:id="@+id/tv_edit_so_ngay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Số ngày: 0"
+        android:textColor="@android:color/holo_blue_dark"
+        android:layout_marginTop="5dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lý do nghỉ phép"
+        android:layout_marginTop="10dp"
+        android:textStyle="bold" />
+    <EditText
+        android:id="@+id/et_edit_ly_do"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nhập lý do" />
+
+</LinearLayout>
