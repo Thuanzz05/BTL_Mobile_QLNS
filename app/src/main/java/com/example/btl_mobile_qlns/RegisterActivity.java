@@ -65,6 +65,8 @@ public class RegisterActivity extends AppCompatActivity {
         
         calendar = Calendar.getInstance();
         dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+
+        findViewById(R.id.btn_back).setOnClickListener(v -> finish());
     }
     
     private void setupDatabase() {

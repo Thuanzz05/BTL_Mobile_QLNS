@@ -54,6 +54,8 @@ public class NghiPhepActivity extends AppCompatActivity {
         etLyDo = findViewById(R.id.et_ly_do);
         btnXinNghiPhep = findViewById(R.id.btn_xin_nghi_phep);
         lvLichSuNghiPhep = findViewById(R.id.lv_lich_su_nghi_phep);
+
+        findViewById(R.id.btn_back).setOnClickListener(v -> finish());
     }
     
     private void setupDatabase() {

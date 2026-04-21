@@ -50,6 +50,8 @@ public class QuanLyChucVuActivity extends AppCompatActivity {
         etTimKiem = findViewById(R.id.et_tim_kiem);
         btnThemChucVu = findViewById(R.id.btn_them_chuc_vu);
         lvChucVu = findViewById(R.id.lv_chuc_vu);
+
+        findViewById(R.id.btn_back).setOnClickListener(v -> finish());
     }
     
     private void setupDatabase() {

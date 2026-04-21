@@ -58,6 +58,8 @@ public class QuanLyLuongActivity extends AppCompatActivity {
         btnTinhLuong = findViewById(R.id.btn_tinh_luong);
         btnXemLuong = findViewById(R.id.btn_xem_luong);
         lvLuong = findViewById(R.id.lv_luong);
+
+        findViewById(R.id.btn_back).setOnClickListener(v -> finish());
     }
     
     private void setupDatabase() {

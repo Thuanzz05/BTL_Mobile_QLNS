@@ -59,6 +59,8 @@ public class QuanLyNhanVienActivity extends AppCompatActivity {
         fabAdd = findViewById(R.id.fab_add_nhan_vien);
 
         btnExportPdf.setOnClickListener(v -> exportToPdf());
+
+        findViewById(R.id.btn_back).setOnClickListener(v -> finish());
         
         fabAdd.setOnClickListener(v -> {
             Intent intent = new Intent(this, ThemNhanVienActivity.class);

@@ -40,6 +40,8 @@ public class QuanLyHopDongActivity extends AppCompatActivity {
         btnAdd = findViewById(R.id.btn_add_hop_dong);
         tvEmpty = findViewById(R.id.tv_empty);
         dbHelper = new DatabaseHelper(this);
+
+        findViewById(R.id.btn_back).setOnClickListener(v -> finish());
     }
 
     private void setupEvents() {

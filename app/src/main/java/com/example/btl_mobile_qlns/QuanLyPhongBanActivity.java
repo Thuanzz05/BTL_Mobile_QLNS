@@ -50,6 +50,8 @@ public class QuanLyPhongBanActivity extends AppCompatActivity {
         etTimKiem = findViewById(R.id.et_tim_kiem);
         btnThemPhongBan = findViewById(R.id.btn_them_phong_ban);
         lvPhongBan = findViewById(R.id.lv_phong_ban);
+
+        findViewById(R.id.btn_back).setOnClickListener(v -> finish());
     }
     
     private void setupDatabase() {
