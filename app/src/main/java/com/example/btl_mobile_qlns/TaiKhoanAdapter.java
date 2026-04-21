@@ -87,10 +87,16 @@ public class TaiKhoanAdapter extends BaseAdapter {
         }
 
         btnDelete.setOnClickListener(v -> {
+            // Chỉ cho phép xóa tài khoản đã bị khóa
+            if (status == 1) {
+                Toast.makeText(context, "Không thể xóa tài khoản đang hoạt động!\nHãy khóa tài khoản trước khi xóa.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            
             new AlertDialog.Builder(context)
                 .setTitle("Xác nhận xóa")
-                .setMessage("Bạn có chắc chắn muốn xóa tài khoản " + username + "?")
-                .setPositiveButton("Xóa", (dialog, which) -> {
+                .setMessage("Tài khoản \"" + username + "\" đã bị khóa.\nBạn có chắc chắn muốn xóa vĩnh viễn tài khoản này?")
+                .setPositiveButton("Xóa vĩnh viễn", (dialog, which) -> {
                     if (dbHelper.deleteAccount(username)) {
                         Toast.makeText(context, "Đã xóa tài khoản", Toast.LENGTH_SHORT).show();
                         refreshData();
