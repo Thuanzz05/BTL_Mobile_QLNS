@@ -77,6 +77,8 @@ public class ThemNhanVienActivity extends AppCompatActivity {
         spPhongBan = findViewById(R.id.sp_phong_ban);
         spChucVu = findViewById(R.id.sp_chuc_vu);
         btnSave = findViewById(R.id.btn_save);
+
+        findViewById(R.id.btn_back).setOnClickListener(v -> finish());
     }
 
     private void openGallery() {

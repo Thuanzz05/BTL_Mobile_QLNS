@@ -65,6 +65,8 @@ public class ChamCongActivity extends AppCompatActivity {
         spNhanVien = findViewById(R.id.sp_nhan_vien);
         layoutChamCongCaNhan = findViewById(R.id.layout_cham_cong_ca_nhan);
         layoutQuanLyChamCong = findViewById(R.id.layout_quan_ly_cham_cong);
+
+        findViewById(R.id.btn_back).setOnClickListener(v -> finish());
     }
     
     private void setupDatabase() {

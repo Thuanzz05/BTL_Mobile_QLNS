@@ -64,6 +64,8 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
         btnCapNhat = findViewById(R.id.btn_cap_nhat);
         btnDoiMatKhau = findViewById(R.id.btn_doi_mat_khau);
         ivAvatar = findViewById(R.id.iv_avatar);
+
+        findViewById(R.id.btn_back).setOnClickListener(v -> finish());
     }
     
     private void setupDatabase() {

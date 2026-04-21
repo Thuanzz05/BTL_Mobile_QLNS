@@ -52,6 +52,8 @@ public class ThemPhongBanActivity extends AppCompatActivity {
         swTrangThai = findViewById(R.id.sw_trang_thai);
         btnLuu = findViewById(R.id.btn_luu);
         btnHuy = findViewById(R.id.btn_huy);
+
+        findViewById(R.id.btn_back).setOnClickListener(v -> finish());
     }
     
     private void setupDatabase() {

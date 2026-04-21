@@ -66,6 +66,8 @@ public class ThongKeActivity extends AppCompatActivity {
         
         spThang = findViewById(R.id.sp_thang_thong_ke);
         spNam = findViewById(R.id.sp_nam_thong_ke);
+
+        findViewById(R.id.btn_back).setOnClickListener(v -> finish());
     }
     
     private void setupDatabase() {

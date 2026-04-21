@@ -54,6 +54,8 @@ public class ThemHopDongActivity extends AppCompatActivity {
         btnSave = findViewById(R.id.btn_save_hd);
         btnCancel = findViewById(R.id.btn_cancel);
         dbHelper = new DatabaseHelper(this);
+
+        findViewById(R.id.btn_back).setOnClickListener(v -> finish());
     }
 
     private void setupSpinners() {

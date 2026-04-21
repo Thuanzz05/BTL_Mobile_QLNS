@@ -20,6 +20,14 @@
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
+            <ImageButton
+                android:id="@+id/btn_back"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@android:drawable/ic_menu_revert"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="@color/white" />
+
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -28,8 +36,7 @@
                 android:textColor="@color/white"
                 android:textSize="22sp"
                 android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginStart="40dp" />
+                android:gravity="center" />
 
             <ImageButton
                 android:id="@+id/btn_add_hop_dong"
